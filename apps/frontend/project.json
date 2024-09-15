@@ -23,8 +23,11 @@
                         "output": "assets"
                     }
                 ],
-                "styles": ["apps/frontend/src/styles.scss"],
-                "scripts": []
+                "styles": [
+                    "apps/frontend/src/styles.scss",
+                    "node_modules/bootstrap/scss/bootstrap.scss"
+                ],
+                "scripts": ["node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"]
             },
             "configurations": {
                 "prod": {

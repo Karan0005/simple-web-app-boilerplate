@@ -70,6 +70,7 @@
         "dbaeumer",
         "DDTHH",
         "devkit",
+        "Dockerized",
         "eamodio",
         "firsttris",
         "frameguard",
@@ -84,6 +85,8 @@
         "sonarlint",
         "sonarsource",
         "SSSZ",
+        "toastr",
+        "topnav",
         "uncolorize",
         "visualstudioexptteam",
         "vscodeintellicode"

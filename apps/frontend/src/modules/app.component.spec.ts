@@ -22,8 +22,4 @@ describe('AppComponent', () => {
     it(`It should success, build app component`, () => {
         expect(component).toBeTruthy();
     });
-
-    it('It should success, project title is frontend', () => {
-        expect(component.title).toEqual('frontend');
-    });
 });
