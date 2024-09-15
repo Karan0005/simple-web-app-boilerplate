@@ -12,9 +12,6 @@ RUN npm install
 RUN npm run backend:test
 RUN npm run backend:build
 
-# Permit server entrypoint
-RUN chmod 775 /app/devops/backend/server-entrypoint.sh
-
 # Set default build-time argument for PORT (not used directly)
 ARG PORT_BACKEND=8000
 
@@ -28,4 +25,4 @@ RUN echo "The PORT_BACKEND environment variable is set to ${PORT_BACKEND}"
 EXPOSE ${PORT_BACKEND}
 
 # Start the REST API server
-ENTRYPOINT [ "/app/devops/backend/server-entrypoint.sh" ]
+CMD ["node", "/app/dist/apps/backend/main"]
