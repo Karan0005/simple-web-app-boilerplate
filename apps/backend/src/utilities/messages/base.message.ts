@@ -10,6 +10,7 @@ export const BaseMessage = {
         DatabaseGeneral:
             'Error occurred at database layer, it might be because of invalid request body.',
         RouteNotFound: 'Cannot GET /',
+        FaviconNotFound: 'Cannot GET /favicon.ico',
         InvalidDateTimeFormat: 'Invalid date time, format must be YYYY-MM-DDTHH:mm:ss.SSSZ',
         InvalidDateFormat: 'Invalid date, format must be YYYY-MM-DD',
         InvalidNumber: 'Invalid number value',

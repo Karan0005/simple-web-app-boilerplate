@@ -1,6 +1,11 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiExcludeEndpoint, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { BaseMessage, HealthCheckSuccessResponse, IRootRouteResponse } from '../utilities';
+import {
+    BaseMessage,
+    ControllerExceptionProcessor,
+    HealthCheckSuccessResponse,
+    IRootRouteResponse
+} from '../utilities';
 import { AppService } from './app.service';
 
 @Controller()
@@ -10,7 +15,11 @@ export class AppController {
     @Get()
     @ApiExcludeEndpoint()
     async rootRoute(): Promise<IRootRouteResponse> {
-        return await this.appService.rootRoute();
+        try {
+            return await this.appService.rootRoute();
+        } catch (error) {
+            throw ControllerExceptionProcessor(error);
+        }
     }
 
     @Get('health')
@@ -21,6 +30,10 @@ export class AppController {
         type: HealthCheckSuccessResponse
     })
     async checkHealth() {
-        return await this.appService.checkHealth();
+        try {
+            return await this.appService.checkHealth();
+        } catch (error) {
+            throw ControllerExceptionProcessor(error);
+        }
     }
 }

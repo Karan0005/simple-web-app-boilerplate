@@ -48,7 +48,9 @@ export class ExceptionProcessor implements ExceptionFilter {
         }
 
         if (
-            responseModel.Message !== BaseMessage.Error.RouteNotFound &&
+            ![BaseMessage.Error.RouteNotFound, BaseMessage.Error.FaviconNotFound].includes(
+                responseModel.Message
+            ) &&
             this.status !== HttpStatus.UNAUTHORIZED
         ) {
             this.logger.error(exception);
