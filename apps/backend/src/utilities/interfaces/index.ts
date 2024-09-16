@@ -1,4 +1,4 @@
-import { IBaseResponse, IRootRouteResponse } from './base.interface';
+import { IBaseResponse } from '@full-stack-project/shared';
 import { IApplicationConfiguration, ISecretManagerConfig } from './config.interface';
 
-export { IApplicationConfiguration, IBaseResponse, IRootRouteResponse, ISecretManagerConfig };
+export { IApplicationConfiguration, IBaseResponse, ISecretManagerConfig };

@@ -1,6 +1,6 @@
+import { BaseMessage } from '@full-stack-project/shared';
 import { BadRequestException } from '@nestjs/common';
 import { TransformFnParams } from 'class-transformer';
-import { BaseMessage } from '../messages';
 
 export const NumberTransformProcessor = (params: TransformFnParams) => {
     try {

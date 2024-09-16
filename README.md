@@ -27,7 +27,6 @@ development, with a focus on code consistency, maintainability, and smooth proje
 Ensure that you have the following installed:
 
 -   [Node.js (>= 20.17.0)](https://nodejs.org/en/download/package-manager)
--   [npm (>= 10.8.2)](https://nodejs.org/en/download/package-manager)
 -   [Docker Desktop (Optional)](https://www.docker.com/products/docker-desktop)
 
 ## Repository Structure

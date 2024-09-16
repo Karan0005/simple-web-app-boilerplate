@@ -1,3 +1,4 @@
+import { BaseMessage } from '@full-stack-project/shared';
 import {
     ArgumentsHost,
     Catch,
@@ -10,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { IBaseResponse } from '../interfaces';
-import { BaseMessage } from '../messages';
 @Catch()
 export class ExceptionProcessor implements ExceptionFilter {
     private status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR;

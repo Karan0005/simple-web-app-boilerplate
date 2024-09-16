@@ -1,6 +1,6 @@
+import { RandomValueTypeEnum } from '@full-stack-project/shared';
 import * as crypto from 'crypto';
 import { v4 as uuid } from 'uuid';
-import { RandomValueTypeEnum } from '../enumerations';
 
 const numbers = '0123456789';
 const lowerCaseAlphabets = 'abcdefghijklmnopqrstuvwxyz';

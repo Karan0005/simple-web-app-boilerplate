@@ -1,6 +1,6 @@
+import { BaseMessage } from '@full-stack-project/shared';
 import { ApiProperty } from '@nestjs/swagger';
 import { IBaseResponse } from '../interfaces';
-import { BaseMessage } from '../messages';
 import { APISuccessResponse } from './api.success.response';
 
 export class HealthCheckSuccessResponse<T>

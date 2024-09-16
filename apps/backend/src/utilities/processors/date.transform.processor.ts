@@ -1,7 +1,7 @@
+import { BaseMessage } from '@full-stack-project/shared';
 import { BadRequestException } from '@nestjs/common';
 import { TransformFnParams } from 'class-transformer';
 import moment from 'moment';
-import { BaseMessage } from '../messages';
 
 export const DateTimeTransformProcessor = (params: TransformFnParams): Date => {
     try {

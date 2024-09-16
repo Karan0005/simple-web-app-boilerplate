@@ -24,7 +24,10 @@
         "esModuleInterop": true,
         "moduleResolution": "node",
         "target": "ES2022",
-        "module": "commonjs"
+        "module": "commonjs",
+        "paths": {
+            "@full-stack-project/shared": ["libs/shared/src/index.ts"]
+        }
     },
     "exclude": [
         "/.vscode",
@@ -34,5 +37,6 @@
         "**/build/**",
         "**/coverage/**",
         "**/tmp/**"
-    ]
+    ],
+    "include": ["**/*.ts"]
 }

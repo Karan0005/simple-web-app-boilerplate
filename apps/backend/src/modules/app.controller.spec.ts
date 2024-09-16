@@ -1,7 +1,7 @@
+import { BaseMessage } from '@full-stack-project/shared';
 import { ConfigService } from '@nestjs/config';
 import { TerminusModule } from '@nestjs/terminus';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BaseMessage } from '../utilities';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
