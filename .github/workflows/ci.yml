@@ -53,6 +53,8 @@ jobs:
               run: |
                   docker build \
                     --build-arg APP_ENV=${{ secrets.APP_ENV }} \
+                    --build-arg PORT_BACKEND=${{ secrets.PORT_BACKEND }} \
+                    --build-arg PORT_FRONTEND=${{ secrets.PORT_FRONTEND }} \
                     --build-arg ROUTE_PREFIX=${{ secrets.ROUTE_PREFIX }} \
                     --build-arg KEY_VAULT_URI=${{ secrets.KEY_VAULT_URI }} \
                     --build-arg TENANT_ID=${{ secrets.TENANT_ID }} \
@@ -69,7 +71,11 @@ jobs:
               run: |
                   curl -X POST -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
                   -H "Content-Type: application/json" \
-                  --data '{"serviceId": "${{ env.render_service_id }}", "clearCache": true}' \
+                  --data '{
+                    "serviceId": "${{ env.render_service_id }}",
+                    "image": "${{ secrets.DOCKER_USERNAME }}/backend:${{ env.docker_tag }}",
+                    "clearCache": true
+                  }' \
                   ${{ secrets.RENDER_API_URL }}/v1/services/${{ env.render_service_id }}/deploys
 
     frontend:
@@ -124,5 +130,9 @@ jobs:
               run: |
                   curl -X POST -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
                   -H "Content-Type: application/json" \
-                  --data '{"serviceId": "${{ env.render_service_id }}", "clearCache": true}' \
+                  --data '{
+                    "serviceId": "${{ env.render_service_id }}",
+                    "image": "${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.docker_tag }}",
+                    "clearCache": true
+                  }' \
                   ${{ secrets.RENDER_API_URL }}/v1/services/${{ env.render_service_id }}/deploys
