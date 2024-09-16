@@ -48,6 +48,8 @@ Ensure that you have the following installed:
     ├── docker-compose.yml
     ├── jest.config.ts
     ├── jest.preset.js
+    ├── libs
+    │   └── shared
     ├── nx.json
     ├── package-lock.json
     ├── package.json
@@ -85,35 +87,6 @@ Ensure that you have the following installed:
 
     - Use `npm run frontend:serve` command to run **frontend**.
     - Use `npm run backend:serve` command to run **backend**.
-
-## Available Commands
-
-Below are the key npm scripts available for managing the project:
-
--   **Install Dependencies**: Runs environment setup, version validation, and extension
-    installation.
-
-    ```bash
-    npm install
-    ```
-
--   **Docker Up**: Builds and runs the Docker containers.
-
-    ```bash
-    npm run docker:up
-    ```
-
--   **Docker Cleanup**: Clears all Docker images, volumes, and containers.
-
-    ```bash
-    npm run docker:clear
-    ```
-
--   **Cache Clear**: Clears npm cache and Nx cache.
-
-    ```bash
-    npm run clear:cache
-    ```
 
 ### Frontend Commands
 
