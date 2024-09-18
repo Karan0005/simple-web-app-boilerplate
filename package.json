@@ -11,6 +11,7 @@
         "docker:up": "docker-compose --env-file .env build --no-cache && docker-compose --env-file .env up",
         "docker:clear": "docker-compose down --rmi all --volumes --remove-orphans && docker system prune -a --volumes -f",
         "clear:cache": "npm cache clean --force && npx nx reset",
+        "generate:module": "node scripts/generate.module.js",
         "frontend:lint": "prettier apps/frontend/**/*.{js,ts,scss,html,json} --write  && eslint apps/frontend/**/*.{ts,js} --fix",
         "frontend:build": "node scripts/frontend.inquirer.js build",
         "frontend:test": "nx test frontend",
