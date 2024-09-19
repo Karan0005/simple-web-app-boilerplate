@@ -18,15 +18,13 @@ describe('AppComponent', () => {
                 })
             ]
         }).compileComponents();
-    });
 
-    beforeEach(() => {
         fixture = TestBed.createComponent(AppComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
 
-    it(`It should success, build app component`, () => {
+    it(`It should success, app component`, () => {
         expect(component).toBeTruthy();
     });
 });
