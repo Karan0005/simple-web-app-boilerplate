@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
@@ -16,7 +17,7 @@ import { SharedModule } from './shared/shared.module';
             level: CONFIG.logLevel === 'debug' ? NgxLoggerLevel.DEBUG : NgxLoggerLevel.ERROR
         })
     ],
-    providers: [],
+    providers: [provideHttpClient()],
     bootstrap: [AppComponent]
 })
 export class AppModule {}

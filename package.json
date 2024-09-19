@@ -14,14 +14,14 @@
         "generate:module": "node scripts/generate.module.js",
         "frontend:lint": "prettier apps/frontend/**/*.{js,ts,scss,html,json} --write  && eslint apps/frontend/**/*.{ts,js} --fix",
         "frontend:build": "node scripts/frontend.ignite.js build",
-        "frontend:test": "nx test frontend",
-        "frontend:e2e": "nx e2e frontend-e2e",
+        "frontend:test": "nx test frontend --skip-nx-cache",
+        "frontend:e2e": "nx e2e frontend-e2e --skip-nx-cache",
         "frontend:serve": "node scripts/frontend.ignite.js serve",
         "backend:lint": "prettier apps/backend/**/*.{js,ts,scss,html,json} --write  && eslint apps/backend/**/*.{ts,js} --fix",
-        "backend:build": "npm run backend:lint && nx build backend",
-        "backend:test": "nx test backend",
-        "backend:e2e": "nx e2e backend-e2e",
-        "backend:serve": "nx serve backend"
+        "backend:build": "npm run backend:lint && nx build backend --skip-nx-cache",
+        "backend:test": "nx test backend --skip-nx-cache",
+        "backend:e2e": "nx e2e backend-e2e --skip-nx-cache",
+        "backend:serve": "nx serve backend --skip-nx-cache"
     },
     "private": true,
     "dependencies": {

@@ -1,14 +1,30 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { BaseMessage, IBaseResponse } from '@full-stack-project/shared';
 import { NGXLogger } from 'ngx-logger';
 import { CONFIG } from '../config/config';
+import { ApiRoute } from './shared/constants';
+import { RestApiService } from './shared/services';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss'
 })
-export class AppComponent {
-    constructor(private loggerService: NGXLogger) {
-        this.loggerService.info(CONFIG.environment);
+export class AppComponent implements OnInit {
+    constructor(private loggerService: NGXLogger, private restAPIService: RestApiService) {}
+
+    async ngOnInit(): Promise<void> {
+        const response: IBaseResponse<{ Information: string }> = await this.restAPIService.get<
+            IBaseResponse<{ Information: string }>
+        >(ApiRoute.Base.RootRoute);
+
+        if (response.IsSuccess) {
+            this.loggerService.info(
+                `Frontend application starts successfully for ${CONFIG.environment} environment`
+            );
+            this.loggerService.info(response.Data.Information);
+        } else {
+            this.loggerService.error(BaseMessage.Error.SomethingWentWrong);
+        }
     }
 }

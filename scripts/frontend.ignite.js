@@ -14,25 +14,31 @@ dotenv.config({ path: path.resolve(process.env.PWD || process.cwd(), '.env') });
 async function ignite() {
     const argument = args[0].trim();
     const environment = process.env.APP_ENV;
+    const port = process.env.PORT_FRONTEND;
 
     switch (argument) {
         case 'build': {
-            let command = 'npm run frontend:lint && nx build frontend --configuration local';
+            let command =
+                'npm run frontend:lint && nx build frontend --configuration local --skip-nx-cache';
             switch (environment) {
                 case 'LOCAL': {
-                    command = 'npm run frontend:lint && nx build frontend --configuration local';
+                    command =
+                        'npm run frontend:lint && nx build frontend --configuration local --skip-nx-cache';
                     break;
                 }
                 case 'DEV': {
-                    command = 'npm run frontend:lint && nx build frontend --configuration dev';
+                    command =
+                        'npm run frontend:lint && nx build frontend --configuration dev --skip-nx-cache';
                     break;
                 }
                 case 'UAT': {
-                    command = 'npm run frontend:lint && nx build frontend --configuration uat';
+                    command =
+                        'npm run frontend:lint && nx build frontend --configuration uat --skip-nx-cache';
                     break;
                 }
                 case 'PROD': {
-                    command = 'npm run frontend:lint && nx build frontend --configuration prod';
+                    command =
+                        'npm run frontend:lint && nx build frontend --configuration prod --skip-nx-cache';
                     break;
                 }
             }
@@ -41,22 +47,22 @@ async function ignite() {
         }
 
         case 'serve': {
-            let command = 'nx serve frontend --configuration local';
+            let command = `nx serve frontend --configuration local --port ${port} --skip-nx-cache`;
             switch (environment) {
                 case 'LOCAL': {
-                    command = 'nx serve frontend --configuration local';
+                    command = `nx serve frontend --configuration local --port ${port} --skip-nx-cache`;
                     break;
                 }
                 case 'DEV': {
-                    command = 'nx serve frontend --configuration dev';
+                    command = `nx serve frontend --configuration dev --port ${port} --skip-nx-cache`;
                     break;
                 }
                 case 'UAT': {
-                    command = 'nx serve frontend --configuration uat';
+                    command = `nx serve frontend --configuration uat --port ${port} --skip-nx-cache`;
                     break;
                 }
                 case 'PROD': {
-                    command = 'nx serve frontend --configuration prod';
+                    command = `nx serve frontend --configuration prod --port ${port} --skip-nx-cache`;
                     break;
                 }
             }
