@@ -1,0 +1,68 @@
+@import '../../../../variables.scss';
+
+.service-section {
+    width: 90%;
+
+    .service-info {
+        h1 {
+            color: $heading-color;
+            line-height: 80px;
+            font-weight: 300;
+        }
+
+        p {
+            color: #898989;
+            font-weight: 400;
+            width: 90%;
+            letter-spacing: 0.2px;
+            line-height: 1.4;
+        }
+    }
+
+    .service-features {
+        .feature-item {
+            border-radius: 5px;
+            background-color: #303030;
+            border: none !important; // initial border style
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease; // smooth transition
+            padding: 20px; // ensure padding is added to avoid content touching borders
+            position: relative; // ensure positioning context for potential shadow or effects
+
+            img {
+                width: 35px !important;
+                margin-bottom: 12px;
+            }
+
+            h4 {
+                font-weight: 400;
+                color: $primary-color;
+            }
+
+            p {
+                color: #7e7e7e;
+                letter-spacing: 0.3px;
+                font-weight: 400;
+                line-height: 25px;
+                font-size: 16px;
+            }
+
+            &:hover {
+                border-color: #007bff; // change border color on hover
+                box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); // subtle shadow effect
+                transform: scale(1.05); // slightly enlarge the box on hover
+            }
+        }
+    }
+}
+@media (max-width: 1200px) {
+    .service-section {
+        .service-info {
+            h1 {
+                line-height: normal;
+            }
+            p {
+                width: 100%;
+            }
+        }
+    }
+}
