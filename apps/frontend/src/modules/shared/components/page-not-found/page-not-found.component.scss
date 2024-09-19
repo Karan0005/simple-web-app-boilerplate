@@ -2,23 +2,21 @@
 .page-404 {
     background: #fff !important;
     font-family: $roboto-font-family;
-    height: 100vh;
-    overflow-x: hidden;
-
     h1 {
-        font-size: 130px;
         color: $button-color;
         position: relative;
         z-index: 100;
         font-family: cursive;
+        height: 15vh;
+        font-size: 100px;
     }
     .four-zero-four-bg {
         background-image: url('../../../../assets/images/lost.gif ');
         background-repeat: no-repeat;
-        background-position: bottom;
-        height: 500px;
+        background-position: center bottom -50px;
         background-size: inherit;
         position: relative;
+        height: 60vh;
     }
     .link-404 {
         color: #fff !important;
@@ -31,7 +29,8 @@
     .content-box-404 {
         font-family: $roboto-font-family;
         position: relative;
-        top: -120px;
+        top: -80px;
+        height: 23.5vh;
         h3 {
             font-weight: 400;
             font-size: 50px;
