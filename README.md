@@ -182,10 +182,10 @@ For real environment variables, ensure they are managed securely.
 ######################################
 #### Common Environment Variables ####
 ######################################
-PORT_BACKEND=8000
-
-# Note: PORT_FRONTEND change required inside apps/frontend/src/config/config.ts too
 PORT_FRONTEND=4000
+
+# Note: PORT_BACKEND change required inside apps/frontend/src/config/config.ts too
+PORT_BACKEND=8000
 
 # Note: APP_ENV can be only LOCAL, DEV, UAT, or PROD
 APP_ENV=LOCAL
