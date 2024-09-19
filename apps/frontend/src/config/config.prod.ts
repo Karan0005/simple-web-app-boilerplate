@@ -1,5 +1,7 @@
+import { EnvironmentEnum } from '@full-stack-project/shared';
+
 export const CONFIG = {
-    environment: 'PROD',
+    environment: EnvironmentEnum.PROD,
     production: true,
     apiUrl: 'http://prod.domain.com/api',
     logLevel: 'error',

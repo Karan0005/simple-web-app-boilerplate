@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import { BaseMessage } from '@full-stack-project/shared';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -10,7 +11,7 @@ import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { LoggerTransports, setupSecretValues } from './config';
 import { AppModule } from './modules/app.module';
-import { BaseMessage, ExceptionProcessor, ResponseProcessor } from './utilities';
+import { ExceptionProcessor, ResponseProcessor } from './utilities';
 
 async function bootstrap() {
     //Setting Up Logger

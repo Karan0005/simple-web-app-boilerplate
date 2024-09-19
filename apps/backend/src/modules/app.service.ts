@@ -1,3 +1,4 @@
+import { BaseMessage } from '@full-stack-project/shared';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -6,7 +7,7 @@ import {
     HealthCheckService,
     MemoryHealthIndicator
 } from '@nestjs/terminus';
-import { BaseMessage, IRootRouteResponse } from '../utilities';
+import { IRootRouteResponse } from './app.interface';
 
 @Injectable()
 export class AppService {

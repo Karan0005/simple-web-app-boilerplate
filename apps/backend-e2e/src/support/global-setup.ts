@@ -10,7 +10,7 @@ module.exports = async function () {
             shell: true
         });
 
-        await new Promise((resolve) => setTimeout(resolve, 15000));
+        await new Promise((resolve) => setTimeout(resolve, 20000));
         console.log('Backend server started successfully.');
     } catch (error) {
         console.error('Error starting the backend server:', error);

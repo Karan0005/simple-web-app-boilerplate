@@ -1,6 +1,6 @@
+import { BaseMessage } from '@full-stack-project/shared';
 import { ApiProperty } from '@nestjs/swagger';
 import { IBaseResponse } from '../interfaces';
-import { BaseMessage } from '../messages';
 
 export class APISuccessResponse<T> implements IBaseResponse<T> {
     @ApiProperty({

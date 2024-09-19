@@ -4,6 +4,7 @@ export const BaseMessage = {
         AccessTokenExpired: 'AccessTokenExpired'
     },
     Error: {
+        InvalidInput: 'Invalid input provided',
         SomethingWentWrong: 'Something went wrong.',
         BackendBootstrap: 'Backend bootstrapped failed.',
         BackendGeneral: 'Backend internal server error',

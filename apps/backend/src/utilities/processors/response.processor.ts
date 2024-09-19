@@ -1,8 +1,8 @@
+import { BaseMessage } from '@full-stack-project/shared';
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { IBaseResponse } from '../interfaces';
-import { BaseMessage } from '../messages';
 
 @Injectable()
 export class ResponseProcessor<T> implements NestInterceptor<T, IBaseResponse<T>> {

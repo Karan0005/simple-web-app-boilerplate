@@ -34,7 +34,6 @@
 
 	// TypeScript specific settings
 	"typescript.tsdk": "node_modules/typescript/lib",
-	"typescript.preferences.importModuleSpecifier": "relative",
 	"typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
 	"typescript.format.semicolons": "insert",
 
@@ -65,6 +64,7 @@
     "terminal.integrated.defaultProfile.osx": "zsh",
     "cSpell.words": [
         "Buildable",
+        "Buildx",
         "camelcase",
         "codemetrics",
         "dbaeumer",
@@ -72,10 +72,12 @@
         "devkit",
         "Dockerized",
         "eamodio",
+        "elif",
         "firsttris",
         "frameguard",
         "hsts",
         "intellicode",
+        "Karan",
         "kisstkondoros",
         "MITM",
         "nestjs",
@@ -90,5 +92,8 @@
         "uncolorize",
         "visualstudioexptteam",
         "vscodeintellicode"
-    ]
+    ],
+    "typescript.preferences.importModuleSpecifier": "shortest",
+    "typescript.suggest.autoImports": true,
+    "javascript.suggest.autoImports": true
 }
