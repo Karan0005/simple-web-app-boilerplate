@@ -181,17 +181,17 @@ For real environment variables, ensure they are managed securely.
 
 #### Common Environment Variables ####
 PORT_BACKEND=8000
-PORT_FRONTEND=4000
-APP_ENV=LOCAL
+PORT_FRONTEND=4000  # Note: change required inside apps/frontend/src/config/config.ts too
+APP_ENV=LOCAL       # Note: APP_ENV can be only LOCAL, DEV, UAT, or PROD
 MIN_NODE_VERSION='20.17.0'
 MIN_NPM_VERSION='10.8.2'
 
 #### Backend Environment Variables ####
 
-# Application
-ROUTE_PREFIX=api
+#Application
+ROUTE_PREFIX=api    # Note: change required inside apps/frontend/src/config files and spec file too
 
-# Key Vault
+#Key Vault
 KEY_VAULT_URI=
 TENANT_ID=
 CLIENT_ID=
