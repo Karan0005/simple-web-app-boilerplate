@@ -151,7 +151,7 @@ the script will automatically rollback the changes.
 npm run upgrade
 ```
 
-### Create module inside frontend or backend
+### Generate module for frontend or backend
 
 This custom script streamlines the creation of new modules for either frontend or backend projects.
 It prompts the user for input on module and component/controller names, generates the necessary
