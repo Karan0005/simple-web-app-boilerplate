@@ -8,6 +8,6 @@ describe('frontend-e2e', () => {
         cy.login('my-email@something.com', 'myPassword');
 
         // Function helper example, see `../support/app.po.ts` file
-        getGreeting().contains(/Welcome to the Ultimate Angular & Nest.js Boilerplate/);
+        getGreeting().contains(/World's Smartest Web App Boilerplate/);
     });
 });

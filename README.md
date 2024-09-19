@@ -27,6 +27,7 @@ development, with a focus on code consistency, maintainability, and smooth proje
 Ensure that you have the following installed:
 
 -   [Node.js (>= 20.17.0)](https://nodejs.org/en/download/package-manager)
+-   [Visual Studio Code (Recommended)](https://code.visualstudio.com/Download)
 -   [Docker Desktop (Optional)](https://www.docker.com/products/docker-desktop)
 
 ## Repository Structure
@@ -56,7 +57,8 @@ Ensure that you have the following installed:
     ├── scripts
     │   ├── dependency.verifier.js
     │   ├── env.builder.js
-    │   ├── frontend.inquirer.js
+    │   ├── frontend.ignite.js
+    │   ├── generate.module.js
     │   ├── upgrade.js
     │   └── vs.extensions.setup.js
     └── tsconfig.base.json
@@ -147,6 +149,16 @@ the script will automatically rollback the changes.
 
 ```bash
 npm run upgrade
+```
+
+### Create module inside frontend or backend
+
+This custom script streamlines the creation of new modules for either frontend or backend projects.
+It prompts the user for input on module and component/controller names, generates the necessary
+files and directories.
+
+```bash
+npm run generate:module
 ```
 
 ## Sample Environment Variables
