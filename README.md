@@ -309,3 +309,5 @@ Contributions are welcome! Here are several ways you can contribute:
 ## License
 
 This project is licensed under the MIT License.
+
+[Branching Strategy](docs/BRANCHING_STRATEGY.md)
