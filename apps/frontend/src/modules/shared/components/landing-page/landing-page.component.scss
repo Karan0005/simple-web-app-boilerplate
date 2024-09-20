@@ -20,6 +20,7 @@
     }
 
     .service-features {
+        margin-bottom: 60px;
         .feature-item {
             border-radius: 5px;
             background-color: #303030;
@@ -27,15 +28,19 @@
             transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease; // smooth transition
             padding: 20px; // ensure padding is added to avoid content touching borders
             position: relative; // ensure positioning context for potential shadow or effects
+            text-align: center;
+            padding-top: 40px !important;
 
             img {
-                width: 35px !important;
-                margin-bottom: 12px;
+                width: 40px !important;
+                height: 40px !important;
+                margin: auto;
             }
 
             h4 {
                 font-weight: 400;
                 color: $primary-color;
+                font-size: 23px;
             }
 
             p {
