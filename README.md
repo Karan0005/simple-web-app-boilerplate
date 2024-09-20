@@ -257,6 +257,14 @@ CLIENT_SECRET=
 -   Frontend: http://localhost:4000
 -   Backend: http://localhost:8000
 
+## Recommended Branching Strategy
+
+This document outlines a solid branching strategy for your Nx monorepo architecture, considering
+from medium to large development team and CI/CD pipelines attached to the main (production), uat
+(user acceptance testing), and develop (development) branches.
+
+[Branching Strategy](docs/BRANCHING_STRATEGY.md)
+
 ## Author Information
 
 -   **Author**: Karan Gupta
@@ -309,5 +317,3 @@ Contributions are welcome! Here are several ways you can contribute:
 ## License
 
 This project is licensed under the MIT License.
-
-[Branching Strategy](docs/BRANCHING_STRATEGY.md)
