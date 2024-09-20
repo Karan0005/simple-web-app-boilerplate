@@ -7,20 +7,23 @@
         h1 {
             color: $heading-color;
             line-height: 80px;
-            font-weight: 300;
+            font-weight: 400;
+            font-size: 50px;
+            margin-bottom: 0px !important;
         }
 
         p {
-            color: #898989;
+            color: $text-color;
             font-weight: 400;
             width: 90%;
             letter-spacing: 0.2px;
-            line-height: 1.4;
+            line-height: 1.5;
+            font-size: 18px;
         }
     }
 
     .service-features {
-        margin-bottom: 60px;
+        margin-bottom: 40px;
         .feature-item {
             border-radius: 5px;
             background-color: #303030;
@@ -44,11 +47,11 @@
             }
 
             p {
-                color: #7e7e7e;
+                color: $text-color;
                 letter-spacing: 0.3px;
                 font-weight: 400;
-                line-height: 25px;
-                font-size: 16px;
+                line-height: 23px;
+                font-size: 15px;
             }
 
             &:hover {
@@ -64,7 +67,21 @@
     .service-section {
         .service-info {
             h1 {
-                line-height: normal;
+                line-height: 55px !important;
+                margin-bottom: 15px !important;
+            }
+            p {
+                width: 100%;
+            }
+        }
+    }
+}
+@media (max-width: 768px) {
+    .service-section {
+        .service-info {
+            h1 {
+                line-height: 45px !important;
+                font-size: 40px !important;
             }
             p {
                 width: 100%;
