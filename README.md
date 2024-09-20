@@ -56,7 +56,7 @@ project scalability.
 -   **Comprehensive CORS Configuration** Ensures secure and flexible cross-origin resource sharing
     settings in the **NestJS** backend, accommodating varying production and development needs.
 
--   **Production-Grade Logging** Good configurable log management system for both backend and
+-   **Military-Grade Logging** Good configurable log management system for both backend and
     frontend, capable of logging information, warnings, and errors to streamline debugging and
     monitoring in all environments.
 
