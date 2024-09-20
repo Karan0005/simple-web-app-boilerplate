@@ -53,6 +53,13 @@ project scalability.
 -   **Scaffolding Commands** Interactive scaffolding commands generate modules with all required
     files for both frontend and backend.
 
+-   **Comprehensive CORS Configuration** Ensures secure and flexible cross-origin resource sharing
+    settings in the **NestJS** backend, accommodating varying production and development needs.
+
+-   **Production-Grade Logging** Good configurable log management system for both backend and
+    frontend, capable of logging information, warnings, and errors to streamline debugging and
+    monitoring in all environments.
+
 ## Prerequisites
 
 Ensure that you have the following installed:
