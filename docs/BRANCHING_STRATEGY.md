@@ -152,8 +152,8 @@ active in production or UAT environments.
 
 ## Summary
 
-This strategy ensures that `develop`, `release/*`, and `main` branches remain synchronized, reducing
-the risk of conflicts and ensuring a smooth, stable release process. The use of feature toggles
-provides additional flexibility, allowing incomplete features to be deployed without disrupting
-production or UAT environments. Following the outlined PR and merging rules will help maintain high
-code quality and minimize the risk of issues during development and deployment.
+This strategy ensures that `develop`, `release/*`, `uat`, and `main` branches remain synchronized,
+reducing the risk of conflicts and ensuring a smooth, stable release process. The use of feature
+toggles provides additional flexibility, allowing incomplete features to be deployed without
+disrupting production or UAT environments. Following the outlined PR and merging rules will help
+maintain high code quality and minimize the risk of issues during development and deployment.
