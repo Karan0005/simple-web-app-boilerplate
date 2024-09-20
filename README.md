@@ -1,26 +1,57 @@
 # NX Monorepo Boilerplate with Angular & Nest.js
 
-This project is a fully-fledged software development boilerplate using Nx Dev Tools, designed for
-scalable monorepo architecture. It supports both frontend (Angular) and backend (Nest.js)
-development, with a focus on code consistency, maintainability, and smooth project management.
+This versatile boilerplate accelerates medium to large-scale web development using NX Dev Tools,
+Angular for the frontend, and NestJS for the backend. It streamlines setup with dynamic environment
+parameterization for local, dev, UAT, and production stages, ensuring smooth transitions between
+environments.
+
+With strict code quality checkpoints, including ESLint and Prettier configurations, it enforces
+consistency, detects syntax errors, and optimizes memory usage. Pre-configured Docker setups for
+both frontend and backend ensure seamless containerized deployments, and Jest handles unit and
+end-to-end testing across both applications for consistent, thorough test coverage.
+
+A powerful upgrade command updates Angular, NestJS, NX Workspace, and npm dependencies, with
+automatic rollback to a stable state in case of failures. The boilerplate includes a CI/CD pipeline
+using GitHub Actions, automating deployments based on branch workflows. Additionally, two basic
+Angular components, NestJS routes, and a functional API interaction demonstrate the integration
+between frontend and backend.
+
+It features a shared library for constants, interfaces, and other reusable elements, reducing
+duplication. Useful package.json commands, like a dynamic npm install that checks Node.js and npm
+versions and auto-installs essential VS Code extensions, simplify development. Interactive
+scaffolding commands create frontend and backend modules with pre-configured setups to expedite
+project scalability.
 
 ## Key Features
 
--   **Monorepo architecture** for managing both frontend and backend projects.
--   **Angular** as the primary frontend framework.
--   **Nest.js** as the primary backend framework.
--   Comprehensive **unit testing** and **E2E testing** for both frontend and backend.
--   **Environment management** for local, dev, UAT, and prod environments.
--   **Docker setup** with Docker Compose to run and test projects locally before release.
--   Strict **Prettier**, **ESLint**, **tsconfig**, and **VS Code** recommended settings for code
-    consistency and clean, maintainable code.
--   Powerful **custom scripts** for validating Node.js and npm versions before setup.
--   **Environment file generation** if not already present.
--   A **single env file** for the entire project.
--   Automatic rollback on breaking dependency upgrades.
--   **Interactive commands** for serving and building the frontend, allowing the user to choose the
-    environment before proceeding.
--   Sample base route and **health check implementation** in the backend.
+-   **Dynamic Environment Setup** Seamlessly supports local, dev, UAT, and production environments
+    with parameterized configurations.
+
+-   **Code Quality Enforcement** Integrates **ESLint** and **Prettier** for strict code consistency,
+    syntax error detection, and memory optimization.
+
+-   **Unified Testing** Utilizes **Jest** for both unit and end-to-end testing across frontend
+    (Angular) and backend (NestJS).
+
+-   **Docker Integration** Pre-configured **Docker** setup ensures smooth containerized development
+    and deployment.
+
+-   **Upgrade Command with Rollback** Automatically upgrades **Angular**, **NestJS**, **NX
+    Workspace**, and npm modules with rollback on failure.
+
+-   **CI/CD Pipeline** **GitHub Actions** pipeline automates deployments based on branch workflows.
+
+-   **Pre-built Components and Routes** Includes basic **Angular** components and **NestJS** routes
+    with a functional API call for full-stack demonstration.
+
+-   **Shared Library** Provides a common library for constants, interfaces, and enumerations to
+    reduce code duplication.
+
+-   **Dynamic npm Install** Checks and verifies **Node.js** and **npm** versions, automatically
+    installing essential **VS Code extensions**.
+
+-   **Scaffolding Commands** Interactive scaffolding commands generate modules with all required
+    files for both frontend and backend.
 
 ## Prerequisites
 
