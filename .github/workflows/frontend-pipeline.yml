@@ -103,11 +103,7 @@ jobs:
                       echo "SERVER_USER=${{ secrets.PROD_SERVER_USER }}" >> $GITHUB_ENV
                       ;;
                   esac
-            - name: Debug Environment Variables
-              run: |
-                  echo "APP_ENV=${{ env.APP_ENV }}"
-                  echo "PORT_FRONTEND=${{ env.PORT_FRONTEND }}"
-                  echo "DOCKER_TAG=${{ env.DOCKER_TAG }}"
+
             - name: Deploy to Digital Ocean Droplet via SSH
               uses: appleboy/ssh-action@v1.0.3
               with:
