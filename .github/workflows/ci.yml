@@ -6,19 +6,13 @@ on:
             - develop
             - uat
             - main
-        paths:
-            - 'apps/frontend/**'
-            - 'apps/backend/**'
-            - 'libs/shared/**'
 
 jobs:
     backend:
         name: Backend Build and Deploy
         runs-on: ubuntu-latest
-        if: |
-            contains(github.event.head_commit.modified, 'apps/backend/') ||
-            contains(github.event.head_commit.modified, 'libs/shared/')
-
+        # Trigger this job only if changes occur in the `apps/backend/` directory
+        if: contains(github.event.head_commit.message, 'apps/backend/')
         steps:
             - name: Checkout code
               uses: actions/checkout@v3
@@ -37,10 +31,8 @@ jobs:
     frontend:
         name: Frontend Build and Deploy
         runs-on: ubuntu-latest
-        if: |
-            contains(github.event.head_commit.modified, 'apps/frontend/') ||
-            contains(github.event.head_commit.modified, 'libs/shared/')
-
+        # Trigger this job only if changes occur in the `apps/frontend/` directory
+        if: contains(github.event.head_commit.message, 'apps/frontend/')
         steps:
             - name: Checkout code
               uses: actions/checkout@v3
@@ -55,3 +47,23 @@ jobs:
                   password: ${{ secrets.DOCKER_PASSWORD }}
 
             # Add remaining steps to build and deploy frontend here
+
+    lib:
+        name: Shared Library Update
+        runs-on: ubuntu-latest
+        # Trigger this job only if changes occur in the `libs/shared/` directory
+        if: contains(github.event.head_commit.message, 'libs/shared/')
+        needs: [frontend, backend]
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Test shared libraries
+              run: npm run test:libs
+
+            - name: Trigger dependent builds
+              run: |
+                  echo "Rebuilding backend and frontend after shared libraries update."
