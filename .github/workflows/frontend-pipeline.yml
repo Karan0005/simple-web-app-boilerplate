@@ -130,6 +130,7 @@ jobs:
                       # Check if Docker is installed
                       if ! command -v docker &> /dev/null; then
                           echo "Docker not found, installing..."
+
                           # Install Docker
                           curl -fsSL https://get.docker.com -o get-docker.sh
                           sh get-docker.sh
@@ -177,6 +178,7 @@ jobs:
                             -e APP_ENV=${{ env.APP_ENV }} \
                             -e PORT_FRONTEND=${{ env.PORT_FRONTEND }} \
                             ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}_backup
+
                           echo "Rolled back to the previous frontend container."
                       fi
 
