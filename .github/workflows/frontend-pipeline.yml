@@ -166,4 +166,4 @@ jobs:
                       fi
 
                       # Remove old frontend images with 'none' tag (dangling images)
-                      docker images --filter "dangling=true" --format "{{.Repository}}:{{.Tag}} {{.ID}}" | grep "${{ secrets.DOCKER_USERNAME }}/frontend:<none>" | awk '{print $2}' | xargs -r docker rmi
+                      docker images --filter "dangling=true" --format "{{.ID}}" | xargs -r docker rmi || true
