@@ -23,22 +23,22 @@ async function ignite() {
             switch (environment) {
                 case 'LOCAL': {
                     command =
-                        'npm run frontend:lint && nx build frontend --configuration local --skip-nx-cache';
+                        'npm run frontend:lint && npm run frontend:test && nx build frontend --configuration local --skip-nx-cache';
                     break;
                 }
                 case 'DEV': {
                     command =
-                        'npm run frontend:lint && nx build frontend --configuration dev --skip-nx-cache';
+                        'npm run frontend:lint && npm run frontend:test && nx build frontend --configuration dev --skip-nx-cache';
                     break;
                 }
                 case 'UAT': {
                     command =
-                        'npm run frontend:lint && nx build frontend --configuration uat --skip-nx-cache';
+                        'npm run frontend:lint && npm run frontend:test && nx build frontend --configuration uat --skip-nx-cache';
                     break;
                 }
                 case 'PROD': {
                     command =
-                        'npm run frontend:lint && nx build frontend --configuration prod --skip-nx-cache';
+                        'npm run frontend:lint && npm run frontend:test && nx build frontend --configuration prod --skip-nx-cache';
                     break;
                 }
             }
