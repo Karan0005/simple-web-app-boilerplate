@@ -23,13 +23,13 @@ RUN echo "The APP_ENV environment variable is set to ${APP_ENV}"
 
 # Run the build process based on the value of APP_ENV
 RUN if [ "$APP_ENV" = "PROD" ]; then \
-        npx nx build frontend --configuration prod; \
+        npx nx build frontend --configuration prod --verbose; \
     elif [ "$APP_ENV" = "UAT" ]; then \
-        npx nx build frontend --configuration uat; \
+        npx nx build frontend --configuration uat --verbose; \
     elif [ "$APP_ENV" = "DEV" ]; then \
-        npx nx build frontend --configuration dev; \
+        npx nx build frontend --configuration dev --verbose; \
     else \
-        npx nx build frontend --configuration local; \
+        npx nx build frontend --configuration local --verbose; \
     fi
 
 # Serve the app using nginx
