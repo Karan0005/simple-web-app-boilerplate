@@ -140,6 +140,13 @@ jobs:
                       # Pull the latest image
                       docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
 
+                      # Check if the container is running
+                      if [ "$(docker ps -q -f name=frontend)" ]; then
+                          # Stop and remove the old container if it exists
+                          docker stop frontend
+                          docker rm frontend
+                      fi
+
                       # Run the new container
                       docker run -d \
                         --restart always \
