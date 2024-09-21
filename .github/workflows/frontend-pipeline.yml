@@ -75,7 +75,9 @@ jobs:
                       echo "DOCKER_TAG=develop" >> $GITHUB_ENV
                       echo "SERVER_HOST=${{ secrets.DEV_SERVER_HOST }}" >> $GITHUB_ENV
                       echo "SERVER_PASS_PHRASE=${{ secrets.DEV_SERVER_PASS_PHRASE }}" >> $GITHUB_ENV
-                      echo "SERVER_PRIVATE_SSH_KEY=${{ secrets.DEV_SERVER_PRIVATE_SSH_KEY }}" >> $GITHUB_ENV
+                      echo "SERVER_PRIVATE_SSH_KEY<<EOF" >> $GITHUB_ENV
+                      echo "${{ secrets.DEV_SERVER_PRIVATE_SSH_KEY }}" >> $GITHUB_ENV
+                      echo "EOF" >> $GITHUB_ENV
                       echo "SERVER_USER=${{ secrets.DEV_SERVER_USER }}" >> $GITHUB_ENV
                       ;;
                     refs/heads/uat)
@@ -84,7 +86,9 @@ jobs:
                       echo "DOCKER_TAG=uat" >> $GITHUB_ENV
                       echo "SERVER_HOST=${{ secrets.UAT_SERVER_HOST }}" >> $GITHUB_ENV
                       echo "SERVER_PASS_PHRASE=${{ secrets.UAT_SERVER_PASS_PHRASE }}" >> $GITHUB_ENV
-                      echo "SERVER_PRIVATE_SSH_KEY=${{ secrets.UAT_SERVER_PRIVATE_SSH_KEY }}" >> $GITHUB_ENV
+                      echo "SERVER_PRIVATE_SSH_KEY<<EOF" >> $GITHUB_ENV
+                      echo "${{ secrets.UAT_SERVER_PRIVATE_SSH_KEY }}" >> $GITHUB_ENV
+                      echo "EOF" >> $GITHUB_ENV
                       echo "SERVER_USER=${{ secrets.UAT_SERVER_USER }}" >> $GITHUB_ENV
                       ;;
                     refs/heads/main)
@@ -93,7 +97,9 @@ jobs:
                       echo "DOCKER_TAG=prod" >> $GITHUB_ENV
                       echo "SERVER_HOST=${{ secrets.PROD_SERVER_HOST }}" >> $GITHUB_ENV
                       echo "SERVER_PASS_PHRASE=${{ secrets.PROD_SERVER_PASS_PHRASE }}" >> $GITHUB_ENV
-                      echo "SERVER_PRIVATE_SSH_KEY=${{ secrets.PROD_SERVER_PRIVATE_SSH_KEY }}" >> $GITHUB_ENV
+                      echo "SERVER_PRIVATE_SSH_KEY<<EOF" >> $GITHUB_ENV
+                      echo "${{ secrets.PROD_SERVER_PRIVATE_SSH_KEY }}" >> $GITHUB_ENV
+                      echo "EOF" >> $GITHUB_ENV
                       echo "SERVER_USER=${{ secrets.PROD_SERVER_USER }}" >> $GITHUB_ENV
                       ;;
                   esac
