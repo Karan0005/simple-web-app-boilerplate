@@ -7,7 +7,6 @@ on:
             - develop
             - uat
             - main
-
         paths:
             - 'apps/frontend/**'
             - 'libs/shared/**'
@@ -17,7 +16,7 @@ jobs:
         name: Frontend Build and Deploy
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout code
+            - name: Checkout Code
               uses: actions/checkout@v4
 
             - name: Set up Docker Buildx
@@ -29,42 +28,34 @@ jobs:
                   username: ${{ secrets.DOCKER_USERNAME }}
                   password: ${{ secrets.DOCKER_PASSWORD }}
 
-            # - name: Set environment for frontend
-            #   id: set-env
-            #   run: |
-            #       if [[ $GITHUB_REF == refs/heads/develop ]]; then
-            #         echo "env=develop" >> $GITHUB_ENV
-            #         echo "docker_tag=develop" >> $GITHUB_ENV
-            #         echo "render_service_id=${{ secrets.RENDER_FRONTEND_SERVICE_DEV }}" >> $GITHUB_ENV
-            #       elif [[ $GITHUB_REF == refs/heads/uat ]]; then
-            #         echo "env=uat" >> $GITHUB_ENV
-            #         echo "docker_tag=uat" >> $GITHUB_ENV
-            #         echo "render_service_id=${{ secrets.RENDER_FRONTEND_SERVICE_UAT }}" >> $GITHUB_ENV
-            #       elif [[ $GITHUB_REF == refs/heads/main ]]; then
-            #         echo "env=prod" >> $GITHUB_ENV
-            #         echo "docker_tag=prod" >> $GITHUB_ENV
-            #         echo "render_service_id=${{ secrets.RENDER_FRONTEND_SERVICE_PROD }}" >> $GITHUB_ENV
-            #       fi
+            - name: Set Environment Variables
+              id: set-env
+              run: |
+                  case $GITHUB_REF in
+                    refs/heads/develop)
+                      echo "env=develop" >> $GITHUB_ENV
+                      echo "docker_tag=develop" >> $GITHUB_ENV
+                      echo "render_service_id=${{ secrets.RENDER_FRONTEND_SERVICE_DEV }}" >> $GITHUB_ENV
+                      ;;
+                    refs/heads/uat)
+                      echo "env=uat" >> $GITHUB_ENV
+                      echo "docker_tag=uat" >> $GITHUB_ENV
+                      echo "render_service_id=${{ secrets.RENDER_FRONTEND_SERVICE_UAT }}" >> $GITHUB_ENV
+                      ;;
+                    refs/heads/main)
+                      echo "env=prod" >> $GITHUB_ENV
+                      echo "docker_tag=prod" >> $GITHUB_ENV
+                      echo "render_service_id=${{ secrets.RENDER_FRONTEND_SERVICE_PROD }}" >> $GITHUB_ENV
+                      ;;
+                  esac
 
-            # - name: Build Frontend Docker Image
-            #   run: |
-            #       docker build \
-            #         --build-arg APP_ENV=${{ secrets.APP_ENV }} \
-            #         --build-arg PORT_FRONTEND=${{ secrets.PORT_FRONTEND }} \
-            #         -t ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.docker_tag }} \
-            #         -f devops/frontend/Dockerfile .
-
-            # - name: Push Frontend Image to DockerHub
-            #   run: |
-            #       docker push ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.docker_tag }}
-
-            # - name: Deploy Frontend to Render
-            #   run: |
-            #       curl -X POST -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-            #       -H "Content-Type: application/json" \
-            #       --data '{
-            #         "serviceId": "${{ env.render_service_id }}",
-            #         "image": "${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.docker_tag }}",
-            #         "clearCache": true
-            #       }' \
-            #       ${{ secrets.RENDER_API_URL }}/v1/services/${{ env.render_service_id }}/deploys
+            - name: Build and Push Frontend Docker Image
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  file: devops/frontend/Dockerfile
+                  push: true
+                  tags: ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.docker_tag }}
+                  build-args: |
+                      APP_ENV=${{ secrets.APP_ENV }}
+                      PORT_FRONTEND=${{ secrets.PORT_FRONTEND }}
