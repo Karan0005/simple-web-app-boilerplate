@@ -136,7 +136,10 @@ jobs:
                       docker run -d \
                         --restart always \
                         --name frontend \
-                        -p 80:80 \
+                        -p ${{ env.PORT_FRONTEND }}:${{ env.PORT_FRONTEND }} \
                         -e APP_ENV=${{ env.APP_ENV }} \
                         -e PORT_FRONTEND=${{ env.PORT_FRONTEND }} \
                         ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
+
+                      # Remove old frontend images with 'none' tag (dangling images)
+                      docker images --filter "dangling=true" --format "{{.Repository}}:{{.Tag}} {{.ID}}" | grep "${{ secrets.DOCKER_USERNAME }}/frontend:<none>" | awk '{print $2}' | xargs -r docker rmi
