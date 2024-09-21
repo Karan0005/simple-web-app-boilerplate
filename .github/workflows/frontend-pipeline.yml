@@ -12,10 +12,62 @@ on:
             - 'libs/shared/**'
 
 jobs:
-    frontend:
-        name: Frontend Build and Deploy
+    setup_env:
+        name: Setup Environment Variables
         runs-on: ubuntu-latest
-        timeout-minutes: 5
+        outputs:
+            app_env: ${{ steps.set-env.outputs.APP_ENV }}
+            port_frontend: ${{ steps.set-env.outputs.PORT_FRONTEND }}
+            docker_tag: ${{ steps.set-env.outputs.docker_tag }}
+            host: ${{ steps.set-env.outputs.HOST }}
+            username: ${{ steps.set-env.outputs.USERNAME }}
+            ssh_key: ${{ steps.set-env.outputs.SSHKEY }}
+            passphrase: ${{ steps.set-env.outputs.PASSPHRASE }}
+        steps:
+            - name: Set Environment Variables
+              id: set-env
+              run: |
+                  case $GITHUB_REF in
+                    refs/heads/develop)
+                      ENV=DEV
+                      TAG=develop
+                      HOST=${{ secrets.DEV_SERVER_HOST }}
+                      USERNAME=${{ secrets.DEV_SERVER_USER }}
+                      SSHKEY=${{ secrets.DEV_SERVER_PRIVATE_SSH_KEY }}
+                      PASSPHRASE=${{ secrets.DEV_SERVER_PASS_PHRASE }}
+                      ;;
+                    refs/heads/uat)
+                      ENV=UAT
+                      TAG=uat
+                      HOST=${{ secrets.DEV_SERVER_HOST }}
+                      USERNAME=${{ secrets.DEV_SERVER_USER }}
+                      SSHKEY=${{ secrets.DEV_SERVER_PRIVATE_SSH_KEY }}
+                      PASSPHRASE=${{ secrets.DEV_SERVER_PASS_PHRASE }}
+                      ;;
+                    refs/heads/main)
+                      ENV=PROD
+                      TAG=prod
+                      HOST=${{ secrets.DEV_SERVER_HOST }}
+                      USERNAME=${{ secrets.DEV_SERVER_USER }}
+                      SSHKEY=${{ secrets.DEV_SERVER_PRIVATE_SSH_KEY }}
+                      PASSPHRASE=${{ secrets.DEV_SERVER_PASS_PHRASE }}
+                      ;;
+                  esac
+                  echo "APP_ENV=${ENV}" >> $GITHUB_ENV
+                  echo "PORT_FRONTEND=80" >> $GITHUB_ENV
+                  echo "docker_tag=${TAG}" >> $GITHUB_ENV
+                  echo "::set-output name=APP_ENV::${ENV}"
+                  echo "::set-output name=PORT_FRONTEND::80"
+                  echo "::set-output name=docker_tag::${TAG}"
+                  echo "::set-output name=HOST::${HOST}"
+                  echo "::set-output name=USERNAME::${USERNAME}"
+                  echo "::set-output name=SSHKEY::${SSHKEY}"
+                  echo "::set-output name=PASSPHRASE::${PASSPHRASE}"
+
+    build:
+        name: Build Frontend
+        runs-on: ubuntu-latest
+        needs: setup_env
         steps:
             - name: Checkout Code
               uses: actions/checkout@v4
@@ -29,51 +81,47 @@ jobs:
                   username: ${{ secrets.DOCKER_USERNAME }}
                   password: ${{ secrets.DOCKER_PASSWORD }}
 
-            - name: Set Environment Variables
-              id: set-env
-              run: |
-                  case $GITHUB_REF in
-                    refs/heads/develop)
-                      echo "env=develop" >> $GITHUB_ENV
-                      echo "APP_ENV=DEV" >> $GITHUB_ENV
-                      echo "PORT_FRONTEND=80" >> $GITHUB_ENV
-                      echo "docker_tag=develop" >> $GITHUB_ENV
-                      echo "railway_token=${{ secrets.DEV_RAILWAY_TOKEN }}" >> $GITHUB_ENV
-                      ;;
-                    refs/heads/uat)
-                      echo "env=uat" >> $GITHUB_ENV
-                      echo "APP_ENV=UAT" >> $GITHUB_ENV
-                      echo "PORT_FRONTEND=80" >> $GITHUB_ENV
-                      echo "docker_tag=uat" >> $GITHUB_ENV
-                      echo "railway_token=${{ secrets.UAT_RAILWAY_TOKEN }}" >> $GITHUB_ENV
-                      ;;
-                    refs/heads/main)
-                      echo "env=prod" >> $GITHUB_ENV
-                      echo "APP_ENV=PROD" >> $GITHUB_ENV
-                      echo "PORT_FRONTEND=80" >> $GITHUB_ENV
-                      echo "docker_tag=prod" >> $GITHUB_ENV
-                      echo "railway_token=${{ secrets.PROD_RAILWAY_TOKEN }}" >> $GITHUB_ENV
-                      ;;
-                  esac
-
             - name: Build and Push Frontend Docker Image
               uses: docker/build-push-action@v6
               with:
                   context: .
                   file: devops/frontend/Dockerfile
                   push: true
-                  tags: ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.docker_tag }}
+                  tags:
+                      ${{ secrets.DOCKER_USERNAME }}/frontend:${{ needs.setup_env.outputs.docker_tag
+                      }}
                   build-args: |
-                      APP_ENV=${{ env.APP_ENV }}
-                      PORT_FRONTEND=${{ env.PORT_FRONTEND }}
-              env:
-                  APP_ENV: ${{ env.APP_ENV }}
-                  PORT_FRONTEND: ${{ env.PORT_FRONTEND }}
+                      APP_ENV=${{ needs.setup_env.outputs.app_env }}
+                      PORT_FRONTEND=${{ needs.setup_env.outputs.port_frontend }}
 
-            - name: Install Railway
-              run: npm i -g @railway/cli
+    deploy:
+        name: Deploy Frontend
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+            - name: Deploy to Digital Ocean Droplet via SSH
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                  host: ${{ needs.setup_env.outputs.HOST }}
+                  username: ${{ needs.setup_env.outputs.USERNAME }}
+                  key: ${{ needs.setup_env.outputs.SSHKEY }}
+                  passphrase: ${{ needs.setup_env.outputs.PASSPHRASE }}
+                  script: |
+                      # Pull the latest image
+                      docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ needs.setup_env.outputs.docker_tag }}
 
-            - name: Deploy
-              run: railway up --image ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.docker_tag }}
-              env:
-                  RAILWAY_TOKEN: ${{ env.railway_token }}
+                      # Check if the container is running
+                      if [ "$(docker ps -q -f name=frontend)" ]; then
+                          # Stop and remove the old container if it exists
+                          docker stop frontend
+                          docker rm frontend
+                      fi
+
+                      # Run a new container from the latest image
+                      docker run -d \
+                        --restart always \
+                        --name frontend \
+                        -p 80:80 \
+                        -e APP_ENV=${{ needs.setup_env.outputs.app_env }} \
+                        -e PORT_FRONTEND=${{ needs.setup_env.outputs.port_frontend }} \
+                        ${{ secrets.DOCKER_USERNAME }}/frontend:${{ needs.setup_env.outputs.docker_tag }}
