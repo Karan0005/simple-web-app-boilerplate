@@ -128,7 +128,7 @@ jobs:
                       # Backup current image
                       if [ "$(docker ps -q -f name=frontend)" ]; then
                           # Tag the current running container's image for rollback if needed
-                          docker commit frontend backup_frontend_image
+                          docker tag $(docker inspect --format='{{.Image}}' frontend) backup_frontend_image
                           echo "Backup of the current frontend image created."
 
                           # Stop and remove the current container
