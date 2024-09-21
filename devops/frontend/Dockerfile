@@ -22,16 +22,16 @@ RUN npm run frontend:test
 RUN echo "Building with APP_ENV=${APP_ENV}..." && \
     if [ "$APP_ENV" = "PROD" ]; then \
         echo "Running production build"; \
-        npx nx build frontend --configuration prod --verbose; \
+        npx nx build frontend --configuration prod --skip-nx-cache --verbose; \
     elif [ "$APP_ENV" = "UAT" ]; then \
         echo "Running UAT build"; \
-        npx nx build frontend --configuration uat --verbose; \
+        npx nx build frontend --configuration uat --skip-nx-cache --verbose; \
     elif [ "$APP_ENV" = "DEV" ]; then \
         echo "Running development build"; \
-        npx nx build frontend --configuration dev --verbose; \
+        npx nx build frontend --configuration dev --skip-nx-cache --verbose; \
     else \
         echo "Running local build"; \
-        npx nx build frontend --configuration local --verbose; \
+        npx nx build frontend --configuration local --skip-nx-cache --verbose; \
     fi
 
 # Serve the app using nginx
