@@ -35,21 +35,24 @@ RUN echo "The APP_ENV environment variable is set to ${APP_ENV}"
 # Print the NX version
 RUN echo "NX version: $(npx nx --version)"
 
-# Run the build process based on the value of APP_ENV
+# Build Stage
 RUN echo "Building with APP_ENV=${APP_ENV}..." && \
     if [ "$APP_ENV" = "PROD" ]; then \
         echo "Running production build"; \
-        npx nx build frontend --configuration prod --verbose || { echo "Build failed"; exit 1; }; \
+        npx nx build frontend --configuration prod --verbose 2>&1 | tee build_output.log || exit 1; \
     elif [ "$APP_ENV" = "UAT" ]; then \
         echo "Running UAT build"; \
-        npx nx build frontend --configuration uat --verbose || { echo "Build failed"; exit 1; }; \
+        npx nx build frontend --configuration uat --verbose 2>&1 | tee build_output.log || exit 1; \
     elif [ "$APP_ENV" = "DEV" ]; then \
         echo "Running development build"; \
-        npx nx build frontend --configuration dev --verbose || { echo "Build failed"; exit 1; }; \
+        npx nx build frontend --configuration dev --verbose 2>&1 | tee build_output.log || exit 1; \
     else \
         echo "Running local build"; \
-        npx nx build frontend --configuration local --verbose || { echo "Build failed"; exit 1; }; \
+        npx nx build frontend --configuration local --verbose 2>&1 | tee build_output.log || exit 1; \
     fi
+
+# Log output for inspection
+RUN cat build_output.log
 
 # Serve the app using nginx
 FROM nginx:alpine
