@@ -125,14 +125,18 @@ jobs:
                       # Pull the latest image
                       docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
 
-                      # Check if the container is running
+                      # Backup current image
                       if [ "$(docker ps -q -f name=frontend)" ]; then
-                          # Stop and remove the old container if it exists
+                          # Tag the current running container's image for rollback if needed
+                          docker commit frontend backup_frontend_image
+                          echo "Backup of the current frontend image created."
+
+                          # Stop and remove the current container
                           docker stop frontend
                           docker rm frontend
                       fi
 
-                      # Run a new container from the latest image
+                      # Run the new container
                       docker run -d \
                         --restart always \
                         --name frontend \
@@ -140,6 +144,24 @@ jobs:
                         -e APP_ENV=${{ env.APP_ENV }} \
                         -e PORT_FRONTEND=${{ env.PORT_FRONTEND }} \
                         ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
+
+                      # Check if the new container started successfully
+                      if [ "$(docker ps -q -f name=frontend)" ]; then
+                          echo "Frontend container started successfully."
+                      else
+                          echo "New frontend container failed to start. Rolling back to backup..."
+                          # Stop and remove failed container (if it exists)
+                          docker stop frontend || true
+                          docker rm frontend || true
+
+                          # Start the previous backed-up container
+                          docker run -d \
+                            --restart always \
+                            --name frontend \
+                            -p ${{ env.PORT_FRONTEND }}:${{ env.PORT_FRONTEND }} \
+                            backup_frontend_image
+                          echo "Rolled back to the previous frontend container."
+                      fi
 
                       # Remove old frontend images with 'none' tag (dangling images)
                       docker images --filter "dangling=true" --format "{{.Repository}}:{{.Tag}} {{.ID}}" | grep "${{ secrets.DOCKER_USERNAME }}/frontend:<none>" | awk '{print $2}' | xargs -r docker rmi
