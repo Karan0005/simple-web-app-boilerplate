@@ -50,10 +50,17 @@ jobs:
                   esac
 
             - name: Pull existing Frontend Docker Image
+              id: pull_image
               run: |
-                  docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }} || echo "No existing image found, proceeding without backup."
+                  if docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}; then
+                      echo "Existing image pulled successfully."
+                  else
+                      echo "No existing image found, proceeding without backup."
+                      exit 0  # Exit gracefully if no image is found
+                  fi
 
             - name: Tag Old Image as Backup
+              if: steps.pull_image.outcome == 'success'
               run: |
                   docker tag ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }} ${{ secrets.DOCKER_USERNAME }}/frontend:backup-${{ env.DOCKER_TAG }}
 
