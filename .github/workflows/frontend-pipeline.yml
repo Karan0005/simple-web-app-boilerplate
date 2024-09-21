@@ -15,6 +15,14 @@ jobs:
     build:
         name: Build Frontend
         runs-on: ubuntu-latest
+        outputs:
+            APP_ENV: ${{ steps.set_env.outputs.APP_ENV }}
+            PORT_FRONTEND: ${{ steps.set_env.outputs.PORT_FRONTEND }}
+            DOCKER_TAG: ${{ steps.set_env.outputs.DOCKER_TAG }}
+            SERVER_HOST: ${{ steps.set_env.outputs.SERVER_HOST }}
+            SERVER_PASS_PHRASE: ${{ steps.set_env.outputs.SERVER_PASS_PHRASE }}
+            SERVER_PRIVATE_SSH_KEY: ${{ steps.set_env.outputs.SERVER_PRIVATE_SSH_KEY }}
+            SERVER_USER: ${{ steps.set_env.outputs.SERVER_USER }}
         steps:
             - name: Checkout Code
               uses: actions/checkout@v4
@@ -29,6 +37,7 @@ jobs:
                   password: ${{ secrets.DOCKER_PASSWORD }}
 
             - name: Set Environment Variables
+              id: set_env
               run: |
                   case $GITHUB_REF in
                     refs/heads/develop)
@@ -98,10 +107,10 @@ jobs:
             - name: Deploy to Digital Ocean Droplet via SSH
               uses: appleboy/ssh-action@v1.0.3
               with:
-                  host: ${{ env.SERVER_HOST }}
-                  username: ${{ env.SERVER_USER }}
-                  key: ${{ env.SERVER_PRIVATE_SSH_KEY }}
-                  passphrase: ${{ env.SERVER_PASS_PHRASE }}
+                  host: ${{ needs.build.outputs.SERVER_HOST }}
+                  username: ${{ needs.build.outputs.SERVER_USER }}
+                  key: ${{ needs.build.outputs.SERVER_PRIVATE_SSH_KEY }}
+                  passphrase: ${{ needs.build.outputs.SERVER_PASS_PHRASE }}
                   script: |
                       # Check if Docker is installed
                       if ! command -v docker &> /dev/null; then
@@ -115,7 +124,7 @@ jobs:
                       fi
 
                       # Pull the latest image
-                      docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
+                      docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ needs.build.outputs.DOCKER_TAG }}
 
                       # Check if the container is running
                       if [ "$(docker ps -q -f name=frontend)" ]; then
@@ -128,10 +137,10 @@ jobs:
                       docker run -d \
                         --restart always \
                         --name frontend \
-                        -p ${{ env.PORT_FRONTEND }}:${{ env.PORT_FRONTEND }} \
-                        -e APP_ENV=${{ env.APP_ENV }} \
-                        -e PORT_FRONTEND=${{ env.PORT_FRONTEND }} \
-                        ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
+                        -p ${{ needs.build.outputs.PORT_FRONTEND }}:${{ needs.build.outputs.PORT_FRONTEND }} \
+                        -e APP_ENV=${{ needs.build.outputs.APP_ENV }} \
+                        -e PORT_FRONTEND=${{ needs.build.outputs.PORT_FRONTEND }} \
+                        ${{ secrets.DOCKER_USERNAME }}/frontend:${{ needs.build.outputs.DOCKER_TAG }}
 
                       # Check if the new container started successfully
                       if [ "$(docker ps -q -f name=frontend)" ]; then
@@ -144,16 +153,16 @@ jobs:
                           docker rm frontend || true
 
                           # Pull the latest image
-                          docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}_backup
+                          docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ needs.build.outputs.DOCKER_TAG }}_backup
 
                           # Start the previous backed-up container
                           docker run -d \
                             --restart always \
                             --name frontend \
-                            -p ${{ env.PORT_FRONTEND }}:${{ env.PORT_FRONTEND }} \
-                            -e APP_ENV=${{ env.APP_ENV }} \
-                            -e PORT_FRONTEND=${{ env.PORT_FRONTEND }} \
-                            ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}_backup
+                            -p ${{ needs.build.outputs.PORT_FRONTEND }}:${{ needs.build.outputs.PORT_FRONTEND }} \
+                            -e APP_ENV=${{ needs.build.outputs.APP_ENV }} \
+                            -e PORT_FRONTEND=${{ needs.build.outputs.PORT_FRONTEND }} \
+                            ${{ secrets.DOCKER_USERNAME }}/frontend:${{ needs.build.outputs.DOCKER_TAG }}_backup
 
                           echo "Rolled back to the previous frontend container."
                       fi
