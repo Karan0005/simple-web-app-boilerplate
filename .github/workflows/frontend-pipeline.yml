@@ -122,9 +122,6 @@ jobs:
                           echo "Docker is already installed."
                       fi
 
-                      # Pull the latest image
-                      docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
-
                       # Backup current image
                       if [ "$(docker ps -q -f name=frontend)" ]; then
                           # Tag the current running container's image for rollback if needed
@@ -135,6 +132,9 @@ jobs:
                           docker stop frontend
                           docker rm frontend
                       fi
+
+                      # Pull the latest image
+                      docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
 
                       # Run the new container
                       docker run -d \
@@ -159,6 +159,8 @@ jobs:
                             --restart always \
                             --name frontend \
                             -p ${{ env.PORT_FRONTEND }}:${{ env.PORT_FRONTEND }} \
+                            -e APP_ENV=${{ env.APP_ENV }} \
+                            -e PORT_FRONTEND=${{ env.PORT_FRONTEND }} \
                              backup_frontend_image:latest
                           echo "Rolled back to the previous frontend container."
                       fi
