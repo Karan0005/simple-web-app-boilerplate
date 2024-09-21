@@ -50,12 +50,14 @@ jobs:
 
             - name: Backup existing image if exists
               run: |
-                  IMAGE_EXISTS=$(docker manifest inspect ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }} > /dev/null 2>&1 && echo "yes" || echo "no")
-                  if [ "$IMAGE_EXISTS" = "yes" ]; then
+                  IMAGE_EXISTS=$(docker manifest inspect ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }} > /dev/null 2>&1 && echo "YES" || echo "NO")
+                  if [ "$IMAGE_EXISTS" = "YES" ]; then
                     echo "Backup existing image..."
+
                     docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
                     docker tag ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }} ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}_backup
                     docker push ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}_backup
+                    docker images --filter "dangling=true" --format "{{.ID}}" | xargs -r docker rmi || true
                   else
                     echo "No existing image to backup."
                   fi
@@ -71,9 +73,8 @@ jobs:
                       APP_ENV=${{ env.APP_ENV }}
                       PORT_FRONTEND=${{ env.PORT_FRONTEND }}
 
-            - name: Remove old frontend images (dangling images)
-              run: |
-                  docker images --filter "dangling=true" --format "{{.ID}}" | xargs -r docker rmi || true
+            - name: Clean up Docker Build Cache
+              run: docker builder prune --force
 
     deploy:
         name: Deploy Frontend
@@ -139,17 +140,6 @@ jobs:
                       # Pull the latest image
                       docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
 
-                      # Backup current image
-                      if [ "$(docker ps -q -f name=frontend)" ]; then
-                          # Tag the current running container's image for rollback if needed
-                          docker commit frontend backup_frontend_image:latest
-                          echo "Backup of the current frontend container created."
-
-                          # Stop and remove the current container
-                          docker stop frontend
-                          docker rm frontend
-                      fi
-
                       # Run the new container
                       docker run -d \
                         --restart always \
@@ -164,9 +154,13 @@ jobs:
                           echo "Frontend container started successfully."
                       else
                           echo "New frontend container failed to start. Rolling back to backup..."
+
                           # Stop and remove failed container (if it exists)
                           docker stop frontend || true
                           docker rm frontend || true
+
+                          # Pull the latest image
+                          docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}_backup
 
                           # Start the previous backed-up container
                           docker run -d \
@@ -175,7 +169,7 @@ jobs:
                             -p ${{ env.PORT_FRONTEND }}:${{ env.PORT_FRONTEND }} \
                             -e APP_ENV=${{ env.APP_ENV }} \
                             -e PORT_FRONTEND=${{ env.PORT_FRONTEND }} \
-                             backup_frontend_image:latest
+                            ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}_backup
                           echo "Rolled back to the previous frontend container."
                       fi
 
