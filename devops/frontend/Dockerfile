@@ -18,36 +18,20 @@ RUN npm install
 RUN npm run frontend:lint
 RUN npm run frontend:test
 
-# # Build Stage
-# RUN echo "Building with APP_ENV=${APP_ENV}..." && \
-#     if [ "$APP_ENV" = "PROD" ]; then \
-#         echo "Running production build"; \
-#         npx nx build frontend --configuration prod --skip-nx-cache --verbose; \
-#     elif [ "$APP_ENV" = "UAT" ]; then \
-#         echo "Running UAT build"; \
-#         npx nx build frontend --configuration uat --skip-nx-cache --verbose; \
-#     elif [ "$APP_ENV" = "DEV" ]; then \
-#         echo "Running development build"; \
-#         npx nx build frontend --configuration dev --skip-nx-cache --verbose; \
-#     else \
-#         echo "Running local build"; \
-#         npx nx build frontend --configuration local --skip-nx-cache --verbose; \
-#     fi
-
 # Build Stage
 RUN echo "Building with APP_ENV=${APP_ENV}..." && \
     if [ "$APP_ENV" = "PROD" ]; then \
         echo "Running production build"; \
-        npx nx build frontend --configuration prod --skip-nx-cache --verbose 2>&1 | tee build_output.log || exit 1; \
+        npx nx build frontend --configuration prod --skip-nx-cache; \
     elif [ "$APP_ENV" = "UAT" ]; then \
         echo "Running UAT build"; \
-        npx nx build frontend --configuration uat --skip-nx-cache --verbose 2>&1 | tee build_output.log || exit 1; \
+        npx nx build frontend --configuration uat --skip-nx-cache; \
     elif [ "$APP_ENV" = "DEV" ]; then \
         echo "Running development build"; \
-        npx nx build frontend --configuration dev --skip-nx-cache --verbose 2>&1 | tee build_output.log || exit 1; \
+        npx nx build frontend --configuration dev --skip-nx-cache; \
     else \
         echo "Running local build"; \
-        npx nx build frontend --configuration local --skip-nx-cache --verbose 2>&1 | tee build_output.log || exit 1; \
+        npx nx build frontend --configuration local --skip-nx-cache; \
     fi
 
 # Serve the app using nginx
