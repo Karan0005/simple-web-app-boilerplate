@@ -12,58 +12,6 @@ on:
             - 'libs/shared/**'
 
 jobs:
-    setup_env:
-        name: Setup Environment Variables
-        runs-on: ubuntu-latest
-        outputs:
-            app_env: ${{ steps.set-env.outputs.APP_ENV }}
-            port_frontend: ${{ steps.set-env.outputs.PORT_FRONTEND }}
-            docker_tag: ${{ steps.set-env.outputs.docker_tag }}
-            host: ${{ steps.set-env.outputs.HOST }}
-            username: ${{ steps.set-env.outputs.USERNAME }}
-            ssh_key: ${{ steps.set-env.outputs.SSHKEY }}
-            passphrase: ${{ steps.set-env.outputs.PASSPHRASE }}
-        steps:
-            - name: Set Environment Variables
-              id: set-env
-              run: |
-                  case $GITHUB_REF in
-                    refs/heads/develop)
-                      ENV=DEV
-                      TAG=develop
-                      HOST=${{ secrets.DEV_SERVER_HOST }}
-                      USERNAME=${{ secrets.DEV_SERVER_USER }}
-                      SSHKEY=${{ secrets.DEV_SERVER_PRIVATE_SSH_KEY }}
-                      PASSPHRASE=${{ secrets.DEV_SERVER_PASS_PHRASE }}
-                      ;;
-                    refs/heads/uat)
-                      ENV=UAT
-                      TAG=uat
-                      HOST=${{ secrets.DEV_SERVER_HOST }}
-                      USERNAME=${{ secrets.DEV_SERVER_USER }}
-                      SSHKEY=${{ secrets.DEV_SERVER_PRIVATE_SSH_KEY }}
-                      PASSPHRASE=${{ secrets.DEV_SERVER_PASS_PHRASE }}
-                      ;;
-                    refs/heads/main)
-                      ENV=PROD
-                      TAG=prod
-                      HOST=${{ secrets.DEV_SERVER_HOST }}
-                      USERNAME=${{ secrets.DEV_SERVER_USER }}
-                      SSHKEY=${{ secrets.DEV_SERVER_PRIVATE_SSH_KEY }}
-                      PASSPHRASE=${{ secrets.DEV_SERVER_PASS_PHRASE }}
-                      ;;
-                  esac
-                  echo "APP_ENV=${ENV}" >> $GITHUB_ENV
-                  echo "PORT_FRONTEND=80" >> $GITHUB_ENV
-                  echo "docker_tag=${TAG}" >> $GITHUB_ENV
-                  echo "::set-output name=APP_ENV::${ENV}"
-                  echo "::set-output name=PORT_FRONTEND::80"
-                  echo "::set-output name=docker_tag::${TAG}"
-                  echo "::set-output name=HOST::${HOST}"
-                  echo "::set-output name=USERNAME::${USERNAME}"
-                  echo "::set-output name=SSHKEY::${SSHKEY}"
-                  echo "::set-output name=PASSPHRASE::${PASSPHRASE}"
-
     build:
         name: Build Frontend
         runs-on: ubuntu-latest
@@ -81,34 +29,85 @@ jobs:
                   username: ${{ secrets.DOCKER_USERNAME }}
                   password: ${{ secrets.DOCKER_PASSWORD }}
 
+            - name: Set Environment Variables
+              id: set-env
+              run: |
+                  case $GITHUB_REF in
+                    refs/heads/develop)
+                      echo "APP_ENV=DEV" >> $GITHUB_ENV
+                      echo "PORT_FRONTEND=80" >> $GITHUB_ENV
+                      echo "DOCKER_TAG=develop" >> $GITHUB_ENV
+                      ;;
+                    refs/heads/uat)
+                      echo "APP_ENV=UAT" >> $GITHUB_ENV
+                      echo "PORT_FRONTEND=80" >> $GITHUB_ENV
+                      echo "DOCKER_TAG=uat" >> $GITHUB_ENV
+                      ;;
+                    refs/heads/main)
+                      echo "APP_ENV=PROD" >> $GITHUB_ENV
+                      echo "PORT_FRONTEND=80" >> $GITHUB_ENV
+                      echo "DOCKER_TAG=prod" >> $GITHUB_ENV
+                      ;;
+                  esac
+
             - name: Build and Push Frontend Docker Image
               uses: docker/build-push-action@v6
               with:
                   context: .
                   file: devops/frontend/Dockerfile
                   push: true
-                  tags:
-                      ${{ secrets.DOCKER_USERNAME }}/frontend:${{ needs.setup_env.outputs.docker_tag
-                      }}
+                  tags: ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
                   build-args: |
-                      APP_ENV=${{ needs.setup_env.outputs.app_env }}
-                      PORT_FRONTEND=${{ needs.setup_env.outputs.port_frontend }}
+                      APP_ENV=${{ env.APP_ENV }}
+                      PORT_FRONTEND=${{ env.PORT_FRONTEND }}
 
     deploy:
         name: Deploy Frontend
         runs-on: ubuntu-latest
         needs: build
         steps:
+            - name: Set Environment Variables
+              id: set-env
+              run: |
+                  case $GITHUB_REF in
+                    refs/heads/develop)
+                      echo "APP_ENV=DEV" >> $GITHUB_ENV
+                      echo "PORT_FRONTEND=80" >> $GITHUB_ENV
+                      echo "DOCKER_TAG=develop" >> $GITHUB_ENV
+                      echo "SERVER_HOST=${{ secrets.DEV_SERVER_HOST }}" >> $GITHUB_ENV
+                      echo "SERVER_PASS_PHRASE=${{ secrets.DEV_SERVER_PASS_PHRASE }}" >> $GITHUB_ENV
+                      echo "SERVER_PRIVATE_SSH_KEY=${{ secrets.DEV_SERVER_PRIVATE_SSH_KEY }}" >> $GITHUB_ENV
+                      echo "SERVER_USER=${{ secrets.DEV_SERVER_USER }}" >> $GITHUB_ENV
+                      ;;
+                    refs/heads/uat)
+                      echo "APP_ENV=UAT" >> $GITHUB_ENV
+                      echo "PORT_FRONTEND=80" >> $GITHUB_ENV
+                      echo "DOCKER_TAG=uat" >> $GITHUB_ENV
+                      echo "SERVER_HOST=${{ secrets.UAT_SERVER_HOST }}" >> $GITHUB_ENV
+                      echo "SERVER_PASS_PHRASE=${{ secrets.UAT_SERVER_PASS_PHRASE }}" >> $GITHUB_ENV
+                      echo "SERVER_PRIVATE_SSH_KEY=${{ secrets.UAT_SERVER_PRIVATE_SSH_KEY }}" >> $GITHUB_ENV
+                      echo "SERVER_USER=${{ secrets.UAT_SERVER_USER }}" >> $GITHUB_ENV
+                      ;;
+                    refs/heads/main)
+                      echo "APP_ENV=PROD" >> $GITHUB_ENV
+                      echo "PORT_FRONTEND=80" >> $GITHUB_ENV
+                      echo "DOCKER_TAG=prod" >> $GITHUB_ENV
+                      echo "SERVER_HOST=${{ secrets.PROD_SERVER_HOST }}" >> $GITHUB_ENV
+                      echo "SERVER_PASS_PHRASE=${{ secrets.PROD_SERVER_PASS_PHRASE }}" >> $GITHUB_ENV
+                      echo "SERVER_PRIVATE_SSH_KEY=${{ secrets.PROD_SERVER_PRIVATE_SSH_KEY }}" >> $GITHUB_ENV
+                      echo "SERVER_USER=${{ secrets.PROD_SERVER_USER }}" >> $GITHUB_ENV
+                      ;;
+                  esac
             - name: Deploy to Digital Ocean Droplet via SSH
               uses: appleboy/ssh-action@v1.0.3
               with:
-                  host: ${{ needs.setup_env.outputs.HOST }}
-                  username: ${{ needs.setup_env.outputs.USERNAME }}
-                  key: ${{ needs.setup_env.outputs.SSHKEY }}
-                  passphrase: ${{ needs.setup_env.outputs.PASSPHRASE }}
+                  host: ${{ env.SERVER_HOST }}
+                  username: ${{ env.SERVER_USER }}
+                  key: ${{ env.SERVER_PRIVATE_SSH_KEY }}
+                  passphrase: ${{ env.SERVER_PASS_PHRASE }}
                   script: |
                       # Pull the latest image
-                      docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ needs.setup_env.outputs.docker_tag }}
+                      docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
 
                       # Check if the container is running
                       if [ "$(docker ps -q -f name=frontend)" ]; then
@@ -122,6 +121,6 @@ jobs:
                         --restart always \
                         --name frontend \
                         -p 80:80 \
-                        -e APP_ENV=${{ needs.setup_env.outputs.app_env }} \
-                        -e PORT_FRONTEND=${{ needs.setup_env.outputs.port_frontend }} \
-                        ${{ secrets.DOCKER_USERNAME }}/frontend:${{ needs.setup_env.outputs.docker_tag }}
+                        -e APP_ENV=${{ env.APP_ENV }} \
+                        -e PORT_FRONTEND=${{ env.PORT_FRONTEND }} \
+                        ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
