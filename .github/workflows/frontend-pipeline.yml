@@ -50,9 +50,10 @@ jobs:
 
             - name: Backup existing image if exists
               run: |
-                  IMAGE_EXISTS=$(docker images -q ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }} | wc -l)
-                  if [ "$IMAGE_EXISTS" -gt 0 ]; then
+                  IMAGE_EXISTS=$(docker manifest inspect ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }} > /dev/null 2>&1 && echo "yes" || echo "no")
+                  if [ "$IMAGE_EXISTS" = "yes" ]; then
                     echo "Backup existing image..."
+                    docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
                     docker tag ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }} ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}_backup
                     docker push ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}_backup
                   else
