@@ -57,7 +57,6 @@ jobs:
                     docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
                     docker tag ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }} ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}_backup
                     docker push ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}_backup
-                    docker images --filter "dangling=true" --format "{{.ID}}" | xargs -r docker rmi || true
                   else
                     echo "No existing image to backup."
                   fi
@@ -72,9 +71,6 @@ jobs:
                   build-args: |
                       APP_ENV=${{ env.APP_ENV }}
                       PORT_FRONTEND=${{ env.PORT_FRONTEND }}
-
-            - name: Clean up Docker Build Cache
-              run: docker builder prune --force
 
     deploy:
         name: Deploy Frontend
