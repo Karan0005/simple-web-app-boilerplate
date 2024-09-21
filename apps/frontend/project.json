@@ -5,12 +5,16 @@
     "prefix": "app",
     "sourceRoot": "apps/frontend/src",
     "tags": [],
+    "cli": {
+        "cache": {
+            "enabled": false
+        }
+    },
     "targets": {
         "build": {
             "executor": "@angular-devkit/build-angular:browser",
             "outputs": ["{options.outputPath}"],
             "options": {
-                "cache": false,
                 "outputPath": "dist/apps/frontend",
                 "index": "apps/frontend/src/index.html",
                 "main": "apps/frontend/src/main.ts",
