@@ -116,6 +116,16 @@ jobs:
                   key: ${{ env.SERVER_PRIVATE_SSH_KEY }}
                   passphrase: ${{ env.SERVER_PASS_PHRASE }}
                   script: |
+                      # Check if Docker is installed
+                      if ! command -v docker &> /dev/null; then
+                          echo "Docker not found, installing..."
+                          # Install Docker
+                          curl -fsSL https://get.docker.com -o get-docker.sh
+                          sh get-docker.sh
+                      else
+                          echo "Docker is already installed."
+                      fi
+
                       # Pull the latest image
                       docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
 
