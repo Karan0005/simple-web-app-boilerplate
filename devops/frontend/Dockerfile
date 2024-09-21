@@ -21,15 +21,34 @@ RUN npm run frontend:test
 # Print the value of APP_ENV during build
 RUN echo "The APP_ENV environment variable is set to ${APP_ENV}"
 
+# # Run the build process based on the value of APP_ENV
+# RUN if [ "$APP_ENV" = "PROD" ]; then \
+#         npx nx build frontend --configuration prod --verbose; \
+#     elif [ "$APP_ENV" = "UAT" ]; then \
+#         npx nx build frontend --configuration uat --verbose; \
+#     elif [ "$APP_ENV" = "DEV" ]; then \
+#         npx nx build frontend --configuration dev --verbose; \
+#     else \
+#         npx nx build frontend --configuration local --verbose; \
+#     fi
+
+# Print the NX version
+RUN echo "NX version: $(npx nx --version)"
+
 # Run the build process based on the value of APP_ENV
-RUN if [ "$APP_ENV" = "PROD" ]; then \
-        npx nx build frontend --configuration prod --verbose; \
+RUN echo "Building with APP_ENV=${APP_ENV}..." && \
+    if [ "$APP_ENV" = "PROD" ]; then \
+        echo "Running production build"; \
+        npx nx build frontend --configuration prod --verbose || { echo "Build failed"; exit 1; }; \
     elif [ "$APP_ENV" = "UAT" ]; then \
-        npx nx build frontend --configuration uat --verbose; \
+        echo "Running UAT build"; \
+        npx nx build frontend --configuration uat --verbose || { echo "Build failed"; exit 1; }; \
     elif [ "$APP_ENV" = "DEV" ]; then \
-        npx nx build frontend --configuration dev --verbose; \
+        echo "Running development build"; \
+        npx nx build frontend --configuration dev --verbose || { echo "Build failed"; exit 1; }; \
     else \
-        npx nx build frontend --configuration local --verbose; \
+        echo "Running local build"; \
+        npx nx build frontend --configuration local --verbose || { echo "Build failed"; exit 1; }; \
     fi
 
 # Serve the app using nginx
