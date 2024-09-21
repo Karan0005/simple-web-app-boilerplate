@@ -49,6 +49,14 @@ jobs:
                       ;;
                   esac
 
+            - name: Pull existing Frontend Docker Image
+              run: |
+                  docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }} || echo "No existing image found, proceeding without backup."
+
+            - name: Tag Old Image as Backup
+              run: |
+                  docker tag ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }} ${{ secrets.DOCKER_USERNAME }}/frontend:backup-${{ env.DOCKER_TAG }}
+
             - name: Build and Push Frontend Docker Image
               uses: docker/build-push-action@v6
               with:
@@ -125,17 +133,6 @@ jobs:
                       # Pull the latest image
                       docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
 
-                      # Backup current image
-                      if [ "$(docker ps -q -f name=frontend)" ]; then
-                          # Tag the current running container's image for rollback if needed
-                          docker commit frontend backup_frontend_image:latest
-                          echo "Backup of the current frontend container created."
-
-                          # Stop and remove the current container
-                          docker stop frontend
-                          docker rm frontend
-                      fi
-
                       # Run the new container
                       docker run -d \
                         --restart always \
@@ -149,6 +146,9 @@ jobs:
                       if [ "$(docker ps -q -f name=frontend)" ]; then
                           echo "Frontend container started successfully."
                       else
+                          # Pull the latest backup image
+                          docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:backup-${{ env.DOCKER_TAG }}
+
                           echo "New frontend container failed to start. Rolling back to backup..."
                           # Stop and remove failed container (if it exists)
                           docker stop frontend || true
@@ -161,7 +161,8 @@ jobs:
                             -p ${{ env.PORT_FRONTEND }}:${{ env.PORT_FRONTEND }} \
                             -e APP_ENV=${{ env.APP_ENV }} \
                             -e PORT_FRONTEND=${{ env.PORT_FRONTEND }} \
-                             backup_frontend_image:latest
+                            ${{ secrets.DOCKER_USERNAME }}/frontend:backup-${{ env.DOCKER_TAG }}
+
                           echo "Rolled back to the previous frontend container."
                       fi
 
