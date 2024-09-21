@@ -1,5 +1,5 @@
 name: backend_pipeline
-run-name: backend deployment for ${{ github.ref_name }} by ${{ github.actor }}
+run-name: backend deployment by ${{ github.actor }}
 
 on:
     push:
