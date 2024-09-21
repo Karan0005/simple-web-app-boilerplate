@@ -63,3 +63,6 @@ jobs:
                   build-args: |
                       APP_ENV=${{ env.APP_ENV }}
                       PORT_FRONTEND=${{ secrets.PORT_FRONTEND }}
+              env:
+                  APP_ENV: ${{ env.APP_ENV }}
+                  PORT_FRONTEND: ${{ secrets.PORT_FRONTEND }}

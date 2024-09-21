@@ -28,8 +28,8 @@ services:
                 PORT_FRONTEND: ${PORT_FRONTEND}
         environment:
             - CYPRESS_INSTALL_BINARY=0
-        volumes:
-            - ./cypress:/root/.cache/Cypress
+            - APP_ENV=${APP_ENV}
+            - PORT_FRONTEND=${PORT_FRONTEND}
         image: frontend_image
         container_name: frontend_container
         ports:

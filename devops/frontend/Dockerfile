@@ -39,4 +39,4 @@ COPY --from=build /app/devops/frontend/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE ${PORT_FRONTEND}
 
 # Use envsubst to replace ${PORT_FRONTEND} in the Nginx configuration at runtime
-CMD envsubst '${PORT_FRONTEND}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'
+CMD ["sh", "-c", "envsubst '${PORT_FRONTEND}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]

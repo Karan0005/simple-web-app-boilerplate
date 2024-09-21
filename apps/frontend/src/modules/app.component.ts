@@ -14,14 +14,15 @@ export class AppComponent implements OnInit {
     constructor(private loggerService: NGXLogger, private restAPIService: RestApiService) {}
 
     async ngOnInit(): Promise<void> {
+        this.loggerService.info(
+            `Frontend application starts successfully for ${CONFIG.environment} environment`
+        );
+
         const response: IBaseResponse<{ Information: string }> = await this.restAPIService.get<
             IBaseResponse<{ Information: string }>
         >(ApiRoute.Base.RootRoute);
 
         if (response.IsSuccess) {
-            this.loggerService.info(
-                `Frontend application starts successfully for ${CONFIG.environment} environment`
-            );
             this.loggerService.info(response.Data.Information);
         } else {
             this.loggerService.error(BaseMessage.Error.SomethingWentWrong);
