@@ -122,19 +122,19 @@ jobs:
                           echo "Docker is already installed."
                       fi
 
+                      # Pull the latest image
+                      docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
+
                       # Backup current image
                       if [ "$(docker ps -q -f name=frontend)" ]; then
                           # Tag the current running container's image for rollback if needed
-                          docker tag ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }} backup_frontend_image:latest
-                          echo "Backup of the current frontend image created."
+                          docker commit frontend backup_frontend_image:latest
+                          echo "Backup of the current frontend container created."
 
                           # Stop and remove the current container
                           docker stop frontend
                           docker rm frontend
                       fi
-
-                      # Pull the latest image
-                      docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}
 
                       # Run the new container
                       docker run -d \
