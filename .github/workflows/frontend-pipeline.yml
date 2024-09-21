@@ -1,5 +1,5 @@
 name: Frontend_Pipeline
-run-name: Backend Build for ${{ github.ref }} by ${{ github.actor }}
+run-name: frontend deployment for ${{ github.ref_name }} by ${{ github.actor }}
 
 on:
     push:
