@@ -29,7 +29,6 @@ jobs:
                   password: ${{ secrets.DOCKER_PASSWORD }}
 
             - name: Set Environment Variables
-              id: set-env
               run: |
                   case $GITHUB_REF in
                     refs/heads/develop)
@@ -49,6 +48,17 @@ jobs:
                       ;;
                   esac
 
+            - name: Backup existing image if exists
+              run: |
+                  IMAGE_EXISTS=$(docker images -q ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }} | wc -l)
+                  if [ "$IMAGE_EXISTS" -gt 0 ]; then
+                    echo "Backup existing image..."
+                    docker tag ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }} ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}_backup
+                    docker push ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }}_backup
+                  else
+                    echo "No existing image to backup."
+                  fi
+
             - name: Build and Push Frontend Docker Image
               uses: docker/build-push-action@v6
               with:
@@ -60,13 +70,16 @@ jobs:
                       APP_ENV=${{ env.APP_ENV }}
                       PORT_FRONTEND=${{ env.PORT_FRONTEND }}
 
+            - name: Remove old frontend images (dangling images)
+              run: |
+                  docker images --filter "dangling=true" --format "{{.ID}}" | xargs -r docker rmi || true
+
     deploy:
         name: Deploy Frontend
         runs-on: ubuntu-latest
         needs: build
         steps:
             - name: Set Environment Variables
-              id: set-env
               run: |
                   case $GITHUB_REF in
                     refs/heads/develop)
@@ -165,5 +178,5 @@ jobs:
                           echo "Rolled back to the previous frontend container."
                       fi
 
-                      # Remove old frontend images with 'none' tag (dangling images)
+                      # Remove old frontend images (dangling images)
                       docker images --filter "dangling=true" --format "{{.ID}}" | xargs -r docker rmi || true
