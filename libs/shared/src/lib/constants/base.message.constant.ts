@@ -9,7 +9,7 @@ export const BaseMessage = {
         BackendBootstrap: 'Backend bootstrapped failed.',
         BackendGeneral: 'Backend internal server error',
         DatabaseGeneral:
-            'Error occurred at database layer, it might be because of invalid request body..',
+            'Error occurred at database layer, it might be because of invalid request body.',
         RouteNotFound: 'Cannot GET /',
         InvalidDateTimeFormat: 'Invalid date time, format must be YYYY-MM-DDTHH:mm:ss.SSSZ',
         InvalidDateFormat: 'Invalid date, format must be YYYY-MM-DD',

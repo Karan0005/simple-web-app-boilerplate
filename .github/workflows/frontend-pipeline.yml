@@ -1,4 +1,4 @@
-name: Full Stack Project Frontend Pipeline
+name: Frontend_Pipeline
 
 on:
     push:
