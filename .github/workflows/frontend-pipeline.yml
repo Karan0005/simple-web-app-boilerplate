@@ -36,20 +36,23 @@ jobs:
                     refs/heads/develop)
                       echo "env=develop" >> $GITHUB_ENV
                       echo "APP_ENV=DEV" >> $GITHUB_ENV
+                      echo "PORT_FRONTEND=80" >> $GITHUB_ENV
                       echo "docker_tag=develop" >> $GITHUB_ENV
-                      echo "render_service_id=${{ secrets.RENDER_FRONTEND_SERVICE_DEV }}" >> $GITHUB_ENV
+                      echo "railway_token=${{ secrets.DEV_RAILWAY_TOKEN }}" >> $GITHUB_ENV
                       ;;
                     refs/heads/uat)
                       echo "env=uat" >> $GITHUB_ENV
                       echo "APP_ENV=UAT" >> $GITHUB_ENV
+                      echo "PORT_FRONTEND=80" >> $GITHUB_ENV
                       echo "docker_tag=uat" >> $GITHUB_ENV
-                      echo "render_service_id=${{ secrets.RENDER_FRONTEND_SERVICE_UAT }}" >> $GITHUB_ENV
+                      echo "railway_token=${{ secrets.UAT_RAILWAY_TOKEN }}" >> $GITHUB_ENV
                       ;;
                     refs/heads/main)
                       echo "env=prod" >> $GITHUB_ENV
                       echo "APP_ENV=PROD" >> $GITHUB_ENV
+                      echo "PORT_FRONTEND=80" >> $GITHUB_ENV
                       echo "docker_tag=prod" >> $GITHUB_ENV
-                      echo "render_service_id=${{ secrets.RENDER_FRONTEND_SERVICE_PROD }}" >> $GITHUB_ENV
+                      echo "railway_token=${{ secrets.PROD_RAILWAY_TOKEN }}" >> $GITHUB_ENV
                       ;;
                   esac
 
@@ -62,7 +65,15 @@ jobs:
                   tags: ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.docker_tag }}
                   build-args: |
                       APP_ENV=${{ env.APP_ENV }}
-                      PORT_FRONTEND=${{ secrets.PORT_FRONTEND }}
+                      PORT_FRONTEND=${{ env.PORT_FRONTEND }}
               env:
                   APP_ENV: ${{ env.APP_ENV }}
-                  PORT_FRONTEND: ${{ secrets.PORT_FRONTEND }}
+                  PORT_FRONTEND: ${{ env.PORT_FRONTEND }}
+
+            - name: Install Railway
+              run: npm i -g @railway/cli
+
+            - name: Deploy
+              run: railway up --image ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.docker_tag }}
+              env:
+                  RAILWAY_TOKEN: ${{ env.railway_token }}
