@@ -18,23 +18,6 @@ RUN npm install
 RUN npm run frontend:lint
 RUN npm run frontend:test
 
-# Print the value of APP_ENV during build
-RUN echo "The APP_ENV environment variable is set to ${APP_ENV}"
-
-# # Run the build process based on the value of APP_ENV
-# RUN if [ "$APP_ENV" = "PROD" ]; then \
-#         npx nx build frontend --configuration prod --verbose; \
-#     elif [ "$APP_ENV" = "UAT" ]; then \
-#         npx nx build frontend --configuration uat --verbose; \
-#     elif [ "$APP_ENV" = "DEV" ]; then \
-#         npx nx build frontend --configuration dev --verbose; \
-#     else \
-#         npx nx build frontend --configuration local --verbose; \
-#     fi
-
-# Print the NX version
-RUN echo "NX version: $(npx nx --version)"
-
 # Build Stage
 RUN echo "Building with APP_ENV=${APP_ENV}..." && \
     if [ "$APP_ENV" = "PROD" ]; then \
@@ -50,9 +33,6 @@ RUN echo "Building with APP_ENV=${APP_ENV}..." && \
         echo "Running local build"; \
         npx nx build frontend --configuration local --verbose 2>&1 | tee build_output.log || exit 1; \
     fi
-
-# Log output for inspection
-RUN cat build_output.log
 
 # Serve the app using nginx
 FROM nginx:alpine
