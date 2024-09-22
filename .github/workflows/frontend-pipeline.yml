@@ -75,6 +75,15 @@ jobs:
                       ;;
                   esac
 
+                  # Set outputs
+                  echo "::set-output name=APP_ENV::$(echo $APP_ENV)"
+                  echo "::set-output name=PORT_FRONTEND::$(echo $PORT_FRONTEND)"
+                  echo "::set-output name=DOCKER_TAG::$(echo $DOCKER_TAG)"
+                  echo "::set-output name=SERVER_HOST::$(echo $SERVER_HOST)"
+                  echo "::set-output name=SERVER_PASS_PHRASE::$(echo $SERVER_PASS_PHRASE)"
+                  echo "::set-output name=SERVER_PRIVATE_SSH_KEY::$(echo $SERVER_PRIVATE_SSH_KEY)"
+                  echo "::set-output name=SERVER_USER::$(echo $SERVER_USER)"
+
             - name: Backup existing image if exists
               run: |
                   IMAGE_EXISTS=$(docker manifest inspect ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.DOCKER_TAG }} > /dev/null 2>&1 && echo "YES" || echo "NO")
