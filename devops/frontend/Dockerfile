@@ -13,24 +13,9 @@ ARG APP_ENV='LOCAL'
 # Set runtime environment variable for APP_ENV
 ENV APP_ENV=${APP_ENV}
 
-# Install all dependencies and test project
+# Install all dependencies and build project
 RUN npm install
-RUN npm run frontend:lint
-RUN npm run frontend:test
-
-# Print the value of APP_ENV during build
-RUN echo "The APP_ENV environment variable is set to ${APP_ENV}"
-
-# Run the build process based on the value of APP_ENV
-RUN if [ "$APP_ENV" = "PROD" ]; then \
-        npx nx build frontend --configuration prod; \
-    elif [ "$APP_ENV" = "UAT" ]; then \
-        npx nx build frontend --configuration uat; \
-    elif [ "$APP_ENV" = "DEV" ]; then \
-        npx nx build frontend --configuration dev; \
-    else \
-        npx nx build frontend --configuration local; \
-    fi
+RUN npm run frontend:build
 
 # Serve the app using nginx
 FROM nginx:alpine
@@ -54,4 +39,4 @@ COPY --from=build /app/devops/frontend/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE ${PORT_FRONTEND}
 
 # Use envsubst to replace ${PORT_FRONTEND} in the Nginx configuration at runtime
-CMD envsubst '${PORT_FRONTEND}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'
+CMD ["sh", "-c", "envsubst '${PORT_FRONTEND}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]

@@ -63,6 +63,7 @@
 	"terminal.integrated.defaultProfile.windows": "PowerShell",
     "terminal.integrated.defaultProfile.osx": "zsh",
     "cSpell.words": [
+        "appleboy",
         "Buildable",
         "Buildx",
         "cacheable",
@@ -74,6 +75,7 @@
         "Dockerized",
         "eamodio",
         "elif",
+        "esac",
         "firsttris",
         "frameguard",
         "hsts",
@@ -87,6 +89,7 @@
         "preinstall",
         "sonarlint",
         "sonarsource",
+        "SSHKEY",
         "SSSZ",
         "toastr",
         "topnav",

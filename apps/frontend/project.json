@@ -5,6 +5,11 @@
     "prefix": "app",
     "sourceRoot": "apps/frontend/src",
     "tags": [],
+    "cli": {
+        "cache": {
+            "enabled": false
+        }
+    },
     "targets": {
         "build": {
             "executor": "@angular-devkit/build-angular:browser",
