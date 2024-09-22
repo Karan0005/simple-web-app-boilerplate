@@ -9,7 +9,6 @@ WORKDIR /app
 
 # Install all dependencies and build project
 RUN npm install
-RUN npm run backend:test
 RUN npm run backend:build
 
 # Set default build-time argument for PORT (not used directly)

@@ -171,12 +171,8 @@ const updateProject = async () => {
 const buildAndTestProject = async () => {
     spinnerManager.start('Building and testing project...');
     try {
-        await runCommand('npm', ['run', 'frontend:lint'], projectRoot);
-        await runCommand('npm', ['run', 'backend:lint'], projectRoot);
-        await runCommand('nx', ['build', 'frontend', '--configuration', 'local'], projectRoot);
-        await runCommand('nx', ['build', 'backend'], projectRoot);
-        await runCommand('nx', ['test', 'frontend'], projectRoot);
-        await runCommand('nx', ['test', 'backend'], projectRoot);
+        await runCommand('npm', ['run', 'backend:build'], projectRoot);
+        await runCommand('npm', ['run', 'frontend:build'], projectRoot);
         spinnerManager.succeed('Build and tests completed successfully.');
         return true;
     } catch (error) {

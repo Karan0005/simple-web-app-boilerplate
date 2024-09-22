@@ -199,6 +199,25 @@ files and directories.
 npm run generate:module
 ```
 
+## Environment Variable Guide for New Variable
+
+### 1. Local Development
+
+Set up environment variable in a `.env` file.
+
+### 2. Local Development with Docker
+
+Set up environment variable in both the `.env` file and `docker-compose.yml`.
+
+### 3. Dev, UAT, Prod Environments
+
+Configure environment variable within CI/CD pipeline files.
+
+### Note
+
+Depending on the project requirements, you may also need to configure environment variable in the
+backend or frontend configuration files.
+
 ## Sample Environment Variables
 
 Below is a sample `.env` file. This file should not contain sensitive or production-specific values.
