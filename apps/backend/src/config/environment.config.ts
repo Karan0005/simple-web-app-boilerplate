@@ -81,13 +81,13 @@ function getAPPBaseURL(environment: string | undefined) {
             return 'http://localhost:' + portFrontend;
         }
         case EnvironmentEnum.DEV: {
-            return 'http://128.199.31.53:8000'; //Replace it with your dev server url
+            return 'http://128.199.31.53'; //Replace it with your dev server url
         }
         case EnvironmentEnum.UAT: {
-            return 'http://128.199.31.53:8000'; //Replace it with your uat server url
+            return 'http://128.199.31.53'; //Replace it with your uat server url
         }
         case EnvironmentEnum.PROD: {
-            return 'http://128.199.31.53:8000'; //Replace it with your prod server url
+            return 'http://128.199.31.53'; //Replace it with your prod server url
         }
         default: {
             return 'http://localhost:' + portFrontend;
