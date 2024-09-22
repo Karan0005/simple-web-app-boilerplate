@@ -15,14 +15,6 @@ jobs:
     build:
         name: Build Frontend
         runs-on: ubuntu-latest
-        outputs:
-            APP_ENV: ${{ steps.set_env.outputs.APP_ENV }}
-            PORT_FRONTEND: ${{ steps.set_env.outputs.PORT_FRONTEND }}
-            DOCKER_TAG: ${{ steps.set_env.outputs.DOCKER_TAG }}
-            SERVER_HOST: ${{ steps.set_env.outputs.SERVER_HOST }}
-            SERVER_PASS_PHRASE: ${{ steps.set_env.outputs.SERVER_PASS_PHRASE }}
-            SERVER_PRIVATE_SSH_KEY: ${{ steps.set_env.outputs.SERVER_PRIVATE_SSH_KEY }}
-            SERVER_USER: ${{ steps.set_env.outputs.SERVER_USER }}
         steps:
             - name: Checkout Code
               uses: actions/checkout@v4
@@ -113,6 +105,15 @@ jobs:
         runs-on: ubuntu-latest
         needs: build
         steps:
+            - name: Debug Outputs
+              run: |
+                  echo "APP_ENV=${{ needs.build.outputs.APP_ENV }}"
+                  echo "PORT_FRONTEND=${{ needs.build.outputs.PORT_FRONTEND }}"
+                  echo "DOCKER_TAG=${{ needs.build.outputs.DOCKER_TAG }}"
+                  echo "SERVER_HOST=${{ needs.build.outputs.SERVER_HOST }}"
+                  echo "SERVER_PASS_PHRASE=${{ needs.build.outputs.SERVER_PASS_PHRASE }}"
+                  echo "SERVER_PRIVATE_SSH_KEY=${{ needs.build.outputs.SERVER_PRIVATE_SSH_KEY }}"
+                  echo "SERVER_USER=${{ needs.build.outputs.SERVER_USER }}"
             - name: Deploy to Digital Ocean Droplet via SSH
               uses: appleboy/ssh-action@v1.0.3
               with:
