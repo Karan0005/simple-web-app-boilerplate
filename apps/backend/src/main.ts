@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { BaseMessage, EnvironmentEnum } from '@full-stack-project/shared';
+import { BaseMessage } from '@full-stack-project/shared';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -100,7 +100,6 @@ async function bootstrap() {
     );
 
     //Setting Up Swagger Documentation
-    const appENV = configService.get('server.env');
     const options = new DocumentBuilder()
         .setTitle('Backend App')
         .setDescription('API Documentation')
@@ -108,11 +107,7 @@ async function bootstrap() {
         .addBearerAuth()
         .build();
     const document = SwaggerModule.createDocument(app, options);
-    SwaggerModule.setup(routePrefix + '/swagger', app, document, {
-        swaggerOptions: {
-            schemes: appENV === EnvironmentEnum.PROD ? ['https'] : ['http', 'https']
-        }
-    });
+    SwaggerModule.setup(routePrefix + '/swagger', app, document);
 
     //Initiating Server
     const port = configService.get('server.port');
