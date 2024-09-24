@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { provideHttpClient } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ToastrModule } from 'ngx-toastr';
 import { LandingPageComponent } from './components/landing-page/landing-page.component';
@@ -13,6 +14,6 @@ import { RestApiService } from './services';
             preventDuplicates: true
         })
     ],
-    providers: [RestApiService]
+    providers: [provideHttpClient(), RestApiService]
 })
 export class SharedModule {}
