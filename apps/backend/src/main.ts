@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { ExceptionProcessor, ResponseProcessor } from '@backend/utilities';
-import { BaseMessage } from '@full-stack-project/shared';
+import { BaseMessage, EnvironmentEnum } from '@full-stack-project/shared';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -136,13 +136,13 @@ function setupGracefulShutdown(worker: cluster.Worker) {
     });
 }
 
-if (cluster.default.isPrimary) {
+if (cluster.default.isPrimary && process.env.APP_ENV !== EnvironmentEnum.LOCAL) {
     // Get the number of CPUs, but allow for a configurable WORKER_COUNT
     const numCPUs = os.cpus().length;
     const workerCount = process.env.WORKER_COUNT ? parseInt(process.env.WORKER_COUNT, 10) : numCPUs;
 
     // Set a higher limit globally for all EventEmitters
-    events.EventEmitter.defaultMaxListeners = numCPUs;
+    events.EventEmitter.defaultMaxListeners = numCPUs === 1 ? 2 : numCPUs;
 
     console.log(
         `Master process is running with PID ${process.pid}. Forking ${workerCount} workers...`
