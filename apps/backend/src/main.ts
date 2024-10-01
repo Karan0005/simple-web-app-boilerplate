@@ -9,6 +9,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cluster from 'cluster';
 import events from 'events';
 import * as express from 'express';
+import basicAuth from 'express-basic-auth';
 import helmet from 'helmet';
 import { WinstonModule } from 'nest-winston';
 import * as os from 'os';
@@ -31,6 +32,8 @@ async function bootstrap() {
     });
     const configService = app.get(ConfigService);
     const routePrefix = configService.get('server.routePrefix') || 'api';
+    const serverSecret: string = configService.get('server.secret') as string;
+    const apiBaseURL: string = configService.get('server.apiBaseURL') as string;
 
     // Setting Up Application Helmet Policy Security
     /**
@@ -103,11 +106,22 @@ async function bootstrap() {
     );
 
     //Setting Up Swagger Documentation
+    app.use(
+        ['/' + routePrefix + '/swagger', '/' + routePrefix + '/swagger-json'],
+        basicAuth({
+            users: {
+                developer: serverSecret
+            },
+            challenge: true
+        })
+    );
+
     const options = new DocumentBuilder()
         .setTitle('Backend App')
         .setDescription('API Documentation')
         .setVersion('1.0.0')
         .addBearerAuth()
+        .addServer(apiBaseURL)
         .build();
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup(routePrefix + '/swagger', app, document);
@@ -116,7 +130,7 @@ async function bootstrap() {
     const port = configService.get('server.port');
     await app.listen(port);
     appLogger.log(BaseMessage.Success.ServerStartUp + port);
-    return { appLogger, configService, routePrefix };
+    return { appLogger, apiBaseURL, routePrefix };
 }
 
 function setupGracefulShutdown(worker: cluster.Worker) {
@@ -163,8 +177,7 @@ if (cluster.default.isPrimary && process.env.APP_ENV !== EnvironmentEnum.LOCAL) 
 } else {
     // Each worker runs its own instance of the NestJS app
     bootstrap()
-        .then(({ appLogger, configService, routePrefix }) => {
-            const apiBaseURL: string = configService.get('server.apiBaseURL') as string;
+        .then(({ appLogger, apiBaseURL, routePrefix }) => {
             appLogger.log(BaseMessage.Success.BackendBootstrap(apiBaseURL + '/' + routePrefix));
         })
         .catch((error) => {
