@@ -32,55 +32,8 @@ async function bootstrap() {
     });
     const configService = app.get(ConfigService);
     const routePrefix = configService.get('server.routePrefix') || 'api';
-    const appEnv: string = configService.get('server.env') ?? EnvironmentEnum.LOCAL;
     const serverSecret: string = configService.get('server.secret') as string;
     const apiBaseURL: string = configService.get('server.apiBaseURL') as string;
-
-    // Setting Up Application Helmet Policy Security
-    /**
-     * This header helps prevent cross-site scripting (XSS) attacks by restricting the resources that can be loaded by the application
-     * Helps prevent click jacking attacks by restricting the application from being embedded in a frame
-     * This header helps prevent attackers from learning the technology stack used by the application
-     * This header helps prevent man-in-the-middle (MITM) attacks by enforcing the use of HTTPS
-     * This header helps prevent attackers from exploiting MIME type sniffing vulnerabilities by preventing browsers from guessing the content type
-     * sets the X-XSS-Protection header to enable the browser's cross-site scripting (XSS) filter
-     * This will control the amount of information sent in the "Referer" header, which can help protect against some types of attacks.
-     *
-     */
-    app.use(
-        helmet({
-            contentSecurityPolicy: {
-                useDefaults: true,
-                directives: {
-                    'default-src': ["'none'"],
-                    'script-src': ["'self'"],
-                    'style-src': ["'self'", "'unsafe-inline'"],
-                    'img-src': ["'self'", 'data:'],
-                    'font-src': ["'self'"],
-                    'connect-src': ["'self'"],
-                    'media-src': ["'self'"],
-                    'object-src': ["'none'"],
-                    'base-uri': ["'self'"],
-                    'form-action': ["'self'"],
-                    'frame-ancestors': ["'none'"],
-                    'upgrade-insecure-requests': [],
-                    'block-all-mixed-content': [],
-                    sandbox: ['allow-scripts', 'allow-same-origin']
-                }
-            },
-            frameguard: { action: 'deny' },
-            hidePoweredBy: true,
-            hsts:
-                appEnv === EnvironmentEnum.PROD
-                    ? { maxAge: 31536000, includeSubDomains: true, preload: true }
-                    : { maxAge: 0 },
-            noSniff: true,
-            xssFilter: true,
-            referrerPolicy: { policy: 'same-origin' },
-            crossOriginEmbedderPolicy: true,
-            crossOriginOpenerPolicy: { policy: 'same-origin' }
-        })
-    );
 
     // Setting Up CORS Policy Security
     app.enableCors({
@@ -129,6 +82,49 @@ async function bootstrap() {
         .build();
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup(routePrefix + '/swagger', app, document);
+
+    // Setting Up Application Helmet Policy Security
+    /**
+     * This header helps prevent cross-site scripting (XSS) attacks by restricting the resources that can be loaded by the application
+     * Helps prevent click jacking attacks by restricting the application from being embedded in a frame
+     * This header helps prevent attackers from learning the technology stack used by the application
+     * This header helps prevent man-in-the-middle (MITM) attacks by enforcing the use of HTTPS
+     * This header helps prevent attackers from exploiting MIME type sniffing vulnerabilities by preventing browsers from guessing the content type
+     * sets the X-XSS-Protection header to enable the browser's cross-site scripting (XSS) filter
+     * This will control the amount of information sent in the "Referer" header, which can help protect against some types of attacks.
+     *
+     */
+    app.use(
+        helmet({
+            contentSecurityPolicy: {
+                useDefaults: true,
+                directives: {
+                    'default-src': ["'none'"],
+                    'script-src': ["'self'"],
+                    'style-src': ["'self'", "'unsafe-inline'"],
+                    'img-src': ["'self'", 'data:'],
+                    'font-src': ["'self'"],
+                    'connect-src': ["'self'"],
+                    'media-src': ["'self'"],
+                    'object-src': ["'none'"],
+                    'base-uri': ["'self'"],
+                    'form-action': ["'self'"],
+                    'frame-ancestors': ["'none'"],
+                    'upgrade-insecure-requests': [],
+                    'block-all-mixed-content': [],
+                    sandbox: ['allow-scripts', 'allow-same-origin']
+                }
+            },
+            frameguard: { action: 'deny' },
+            hidePoweredBy: true,
+            hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+            noSniff: true,
+            xssFilter: true,
+            referrerPolicy: { policy: 'same-origin' },
+            crossOriginEmbedderPolicy: true,
+            crossOriginOpenerPolicy: { policy: 'same-origin' }
+        })
+    );
 
     //Initiating Server
     const port = configService.get('server.port');
