@@ -11,12 +11,12 @@ import { IRootRouteResponse } from './app.interface';
 
 @Injectable()
 export class AppService {
-    private appEnvironment: string;
+    private readonly appEnvironment: string;
 
     constructor(
-        private health: HealthCheckService,
-        private memoryHealthIndicator: MemoryHealthIndicator,
-        private diskHealthIndicator: DiskHealthIndicator,
+        private readonly health: HealthCheckService,
+        private readonly memoryHealthIndicator: MemoryHealthIndicator,
+        private readonly diskHealthIndicator: DiskHealthIndicator,
         config: ConfigService
     ) {
         this.appEnvironment = config.get('server.env') ?? '';
@@ -32,10 +32,10 @@ export class AppService {
             () => this.memoryHealthIndicator.checkHeap('HEAP_Memory', 300 * 1024 * 1024),
             // The process should not have more than 300MB RSS memory allocated
             () => this.memoryHealthIndicator.checkRSS('RSS_Memory', 300 * 1024 * 1024),
-            // The used disk storage should not exceed the 80% of the available space
+            // The used disk storage should not exceed the 90% of the available space
             () =>
                 this.diskHealthIndicator.checkStorage('DISK_Health', {
-                    thresholdPercent: 0.8,
+                    thresholdPercent: 0.9,
                     path: __dirname
                 })
         ]);
