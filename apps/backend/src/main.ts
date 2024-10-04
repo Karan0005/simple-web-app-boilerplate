@@ -11,6 +11,7 @@ import events from 'events';
 import * as express from 'express';
 import basicAuth from 'express-basic-auth';
 import helmet from 'helmet';
+import { Server } from 'http';
 import { WinstonModule } from 'nest-winston';
 import * as os from 'os';
 import * as winston from 'winston';
@@ -128,26 +129,9 @@ async function bootstrap() {
 
     //Initiating Server
     const port = configService.get('server.port');
-    await app.listen(port);
+    const server = await app.listen(port);
     appLogger.log(BaseMessage.Success.ServerStartUp + port);
-    return { appLogger, apiBaseURL, routePrefix };
-}
-
-function setupGracefulShutdown(worker: cluster.Worker) {
-    // Graceful shutdown on SIGINT or SIGTERM
-    process.on('SIGINT', () => {
-        console.log(`Worker ${worker.process.pid} is shutting down...`);
-        worker.kill('SIGINT');
-    });
-
-    process.on('SIGTERM', () => {
-        console.log(`Worker ${worker.process.pid} received SIGTERM, exiting...`);
-        worker.kill('SIGTERM');
-    });
-
-    worker.on('exit', (code, signal) => {
-        console.log(`Worker ${worker.process.pid} exited with code ${code} and signal ${signal}`);
-    });
+    return { server, app, appLogger, apiBaseURL, routePrefix };
 }
 
 if (cluster.default.isPrimary && process.env.APP_ENV !== EnvironmentEnum.LOCAL) {
@@ -164,23 +148,85 @@ if (cluster.default.isPrimary && process.env.APP_ENV !== EnvironmentEnum.LOCAL) 
 
     // Fork workers equal to WORKER_COUNT or number of CPUs
     for (let i = 0; i < workerCount; i++) {
-        const worker = cluster.default.fork();
-        setupGracefulShutdown(worker);
+        cluster.default.fork();
     }
 
     // If a worker dies, log the event and fork a new worker
     cluster.default.on('exit', (worker) => {
         console.log(`Worker ${worker.process.pid} died. Starting a new worker...`);
-        const newWorker = cluster.default.fork();
-        setupGracefulShutdown(newWorker);
+        cluster.default.fork();
     });
 } else {
     // Each worker runs its own instance of the NestJS app
     bootstrap()
-        .then(({ appLogger, apiBaseURL, routePrefix }) => {
+        .then(({ server, app, appLogger, apiBaseURL, routePrefix }) => {
+            gracefulServerShutdown(server, app, cluster.default.worker);
             appLogger.log(BaseMessage.Success.BackendBootstrap(apiBaseURL + '/' + routePrefix));
         })
         .catch((error) => {
             console.error(JSON.stringify(error));
         });
+}
+
+function gracefulServerShutdown(
+    server: Server,
+    app: NestExpressApplication,
+    worker: cluster.Worker | undefined
+) {
+    let activeConnections = 0;
+    server.on('connection', (connection) => {
+        activeConnections++;
+        connection.on('close', () => activeConnections--);
+    });
+
+    worker?.on('exit', (code, signal) => {
+        console.log(`Worker ${worker.process.pid} exited with code ${code} and signal ${signal}`);
+        process.exit(code);
+    });
+
+    const shutdown = async (signal: string) => {
+        console.log(`Received shutdown signal (${signal}). Closing server...`);
+        try {
+            const timeout = setTimeout(async () => {
+                console.log('Forcing shutdown due to timeout.');
+                worker?.kill();
+                process.exit(1);
+            }, 20000);
+
+            await new Promise<void>((resolve, reject) => {
+                server.close((error) => {
+                    clearTimeout(timeout);
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+
+            while (activeConnections > 0) {
+                console.log(`Waiting for ${activeConnections} connections to finish...`);
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+            }
+
+            await app.close();
+            worker?.disconnect();
+            console.log('Application shut down gracefully.');
+        } catch (error) {
+            console.log('Error occurred during graceful shutdown:', error);
+        } finally {
+            process.exit(0);
+        }
+    };
+
+    process.on('SIGINT', () => shutdown('SIGINT'));
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('uncaughtException', (error) => {
+        console.log('Uncaught exception:', error);
+        shutdown('uncaughtException');
+    });
+    process.on('unhandledRejection', (error) => {
+        console.log('Unhandled rejection:', error);
+        shutdown('unhandledRejection');
+    });
 }
