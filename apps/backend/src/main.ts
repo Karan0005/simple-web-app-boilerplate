@@ -11,7 +11,6 @@ import events from 'events';
 import * as express from 'express';
 import basicAuth from 'express-basic-auth';
 import helmet from 'helmet';
-import { Server } from 'http';
 import { WinstonModule } from 'nest-winston';
 import * as os from 'os';
 import * as winston from 'winston';
@@ -130,13 +129,16 @@ async function bootstrap() {
         })
     );
 
+    // Enable graceful shutdown with NestJS built-in hooks
+    app.enableShutdownHooks();
+
     // Start the server and listen on the configured port
     const port = configService.get('server.port');
-    const server = await app.listen(port);
+    await app.listen(port);
     appLogger.log(BaseMessage.Success.ServerStartUp + port);
 
     // Return the server and related instances
-    return { server, app, appLogger, apiBaseURL, routePrefix };
+    return { appLogger, apiBaseURL, routePrefix };
 }
 
 if (cluster.default.isPrimary && process.env.APP_ENV !== EnvironmentEnum.LOCAL) {
@@ -157,91 +159,36 @@ if (cluster.default.isPrimary && process.env.APP_ENV !== EnvironmentEnum.LOCAL) 
     }
 
     // Restart a worker if it dies unexpectedly
-    cluster.default.on('exit', (worker) => {
-        console.log(`Worker ${worker.process.pid} died. Starting a new worker...`);
+    cluster.default.on('exit', (worker, code, signal) => {
+        console.log(
+            `Worker ${worker.process.pid} exited with code ${code}, signal ${signal}. Restarting...`
+        );
         cluster.default.fork();
+    });
+
+    // Graceful shutdown for master process
+    process.on('SIGTERM', () => {
+        console.log('Master received SIGTERM, shutting down gracefully...');
+        for (const id in cluster.default.workers) {
+            cluster.default.workers[id]?.kill();
+        }
+        process.exit(0);
+    });
+
+    process.on('SIGINT', () => {
+        console.log('Master received SIGINT, shutting down gracefully...');
+        for (const id in cluster.default.workers) {
+            cluster.default.workers[id]?.kill();
+        }
+        process.exit(0);
     });
 } else {
     // Worker process: start the NestJS app instance
     bootstrap()
-        .then(({ server, app, appLogger, apiBaseURL, routePrefix }) => {
-            gracefulServerShutdown(server, app, cluster.default.worker);
+        .then(({ appLogger, apiBaseURL, routePrefix }) => {
             appLogger.log(BaseMessage.Success.BackendBootstrap(apiBaseURL + '/' + routePrefix));
         })
         .catch((error) => {
             console.error(JSON.stringify(error));
         });
-}
-
-// Gracefully handle server shutdown on receiving termination signals
-function gracefulServerShutdown(
-    server: Server,
-    app: NestExpressApplication,
-    worker: cluster.Worker | undefined
-) {
-    let activeConnections = 0;
-
-    // Track active connections to allow graceful shutdown
-    server.on('connection', (connection) => {
-        activeConnections++;
-        connection.on('close', () => activeConnections--);
-    });
-
-    // Handle worker exit events
-    worker?.on('exit', (code, signal) => {
-        console.log(`Worker ${worker.process.pid} exited with code ${code} and signal ${signal}`);
-        process.exit(code);
-    });
-
-    // Shutdown logic to handle different termination signals
-    const shutdown = async (signal: string) => {
-        console.log(`Received shutdown signal (${signal}). Closing server...`);
-        try {
-            // Set a timeout to force shutdown if it takes too long
-            const timeout = setTimeout(async () => {
-                console.log('Forcing shutdown due to timeout.');
-                worker?.kill();
-                process.exit(1);
-            }, 20000);
-
-            // Close the server and wait for existing connections to finish
-            await new Promise<void>((resolve, reject) => {
-                server.close((error) => {
-                    clearTimeout(timeout);
-                    if (error) {
-                        reject(error);
-                    } else {
-                        resolve();
-                    }
-                });
-            });
-
-            // Wait until all active connections are closed
-            while (activeConnections > 0) {
-                console.log(`Waiting for ${activeConnections} connections to finish...`);
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-            }
-
-            // Close the NestJS application instance
-            await app.close();
-            worker?.disconnect();
-            console.log('Application shut down gracefully.');
-        } catch (error) {
-            console.log('Error occurred during graceful shutdown:', error);
-        } finally {
-            process.exit(0);
-        }
-    };
-
-    // Attach signal handlers for SIGINT, SIGTERM, and unhandled exceptions/rejections
-    process.on('SIGINT', () => shutdown('SIGINT'));
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
-    process.on('uncaughtException', (error) => {
-        console.log('Uncaught exception:', error);
-        shutdown('uncaughtException');
-    });
-    process.on('unhandledRejection', (error) => {
-        console.log('Unhandled rejection:', error);
-        shutdown('unhandledRejection');
-    });
 }
